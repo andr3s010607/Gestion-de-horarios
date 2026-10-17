@@ -1,0 +1,9 @@
+package co.edu.unbosque.gestorhorarios.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import co.edu.unbosque.gestorhorarios.entity.DocenteAsignatura;
+
+public interface DocenteAsignaturaRepository extends JpaRepository<DocenteAsignatura, Long> {
+
+}
