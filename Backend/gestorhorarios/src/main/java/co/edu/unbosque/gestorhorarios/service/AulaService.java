@@ -43,12 +43,24 @@ public class AulaService implements CRUDOperation<AulaDTO> {
         return aulaRepository.findById(id).map(this::convertirADTO).orElse(null);
     }
 
+    public AulaDTO getByCodigo(String codigo) {
+        return aulaRepository.findByCodigo(codigo).map(this::convertirADTO).orElse(null);
+    }
+
     @Override
     public int deleteById(Long id) {
         if (!aulaRepository.existsById(id)) {
             return 1;
         }
         aulaRepository.deleteById(id);
+        return 0;
+    }
+
+    public int deleteByCodigo(String codigo) {
+        if (aulaRepository.findByCodigo(codigo).isEmpty()) {
+            return 1;
+        }
+        aulaRepository.deleteByCodigo(codigo);
         return 0;
     }
 
@@ -68,6 +80,11 @@ public class AulaService implements CRUDOperation<AulaDTO> {
         } catch (Exception e) {
             return 1;
         }
+    }
+
+    public int updateByCodigo(String codigo, AulaDTO dto) {
+        Aula aula = aulaRepository.findByCodigo(codigo).orElse(null);
+        return aula == null ? 1 : updateById(aula.getId(), dto);
     }
 
     @Override

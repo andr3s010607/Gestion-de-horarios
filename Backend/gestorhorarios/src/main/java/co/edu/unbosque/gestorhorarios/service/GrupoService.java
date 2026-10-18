@@ -13,6 +13,7 @@ import co.edu.unbosque.gestorhorarios.entity.Semestre;
 import co.edu.unbosque.gestorhorarios.repository.SemestreRepository;
 import co.edu.unbosque.gestorhorarios.entity.Docente;
 import co.edu.unbosque.gestorhorarios.repository.DocenteRepository;
+import co.edu.unbosque.gestorhorarios.repository.DocenteAsignaturaRepository;
 
 @Service
 public class GrupoService implements CRUDOperation<GrupoDTO> {
@@ -21,12 +22,14 @@ public class GrupoService implements CRUDOperation<GrupoDTO> {
     private final AsignaturaRepository asignaturaRepository;
     private final SemestreRepository semestreRepository;
     private final DocenteRepository docenteRepository;
+    private final DocenteAsignaturaRepository docenteAsignaturaRepository;
 
-    public GrupoService(GrupoRepository grupoRepository, AsignaturaRepository asignaturaRepository, SemestreRepository semestreRepository, DocenteRepository docenteRepository) {
+    public GrupoService(GrupoRepository grupoRepository, AsignaturaRepository asignaturaRepository, SemestreRepository semestreRepository, DocenteRepository docenteRepository, DocenteAsignaturaRepository docenteAsignaturaRepository) {
         this.grupoRepository = grupoRepository;
         this.asignaturaRepository = asignaturaRepository;
         this.semestreRepository = semestreRepository;
         this.docenteRepository = docenteRepository;
+        this.docenteAsignaturaRepository = docenteAsignaturaRepository;
     }
 
     @Override
@@ -98,17 +101,23 @@ public class GrupoService implements CRUDOperation<GrupoDTO> {
         entity.setCupoPlaneado(dto.getCupoPlaneado());
         entity.setActivo(dto.isActivo());
         Asignatura asignatura = dto.getAsignaturaId() == null ? null : asignaturaRepository.findById(dto.getAsignaturaId()).orElse(null);
-        if (asignatura == null) {
+        if (asignatura == null || !asignatura.isActiva()) {
             return null;
         }
         entity.setAsignatura(asignatura);
         Semestre semestre = dto.getSemestreId() == null ? null : semestreRepository.findById(dto.getSemestreId()).orElse(null);
-        if (semestre == null) {
+        if (semestre == null || !semestre.isActivo()) {
             return null;
         }
         entity.setSemestre(semestre);
         Docente docente = dto.getDocenteId() == null ? null : docenteRepository.findById(dto.getDocenteId()).orElse(null);
-        if (dto.getDocenteId() != null && docente == null) {
+        if (docente == null || !docente.isActivo()) {
+            return null;
+        }
+        boolean habilitado = docenteAsignaturaRepository.findAll().stream()
+                .anyMatch(relacion -> relacion.getDocente().getId().equals(docente.getId())
+                        && relacion.getAsignatura().getId().equals(asignatura.getId()));
+        if (!habilitado) {
             return null;
         }
         entity.setDocente(docente);

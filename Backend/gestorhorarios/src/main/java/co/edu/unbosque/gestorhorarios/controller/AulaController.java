@@ -40,6 +40,26 @@ public class AulaController {
         return new ResponseEntity<>(aulaService.getAll(), HttpStatus.OK);
     }
 
+    @GetMapping("/codigo/{codigo}")
+    public ResponseEntity<AulaDTO> obtenerPorCodigo(@PathVariable String codigo) {
+        AulaDTO dto = aulaService.getByCodigo(codigo);
+        return dto == null ? new ResponseEntity<>(HttpStatus.NOT_FOUND) : new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
+    @PutMapping("/codigo/{codigo}")
+    public ResponseEntity<String> actualizarPorCodigo(@PathVariable String codigo, @RequestBody AulaDTO dto) {
+        return aulaService.updateByCodigo(codigo, dto) == 0
+                ? new ResponseEntity<>("Aula actualizada correctamente", HttpStatus.OK)
+                : new ResponseEntity<>("Error al actualizar Aula", HttpStatus.BAD_REQUEST);
+    }
+
+    @DeleteMapping("/codigo/{codigo}")
+    public ResponseEntity<String> eliminarPorCodigo(@PathVariable String codigo) {
+        return aulaService.deleteByCodigo(codigo) == 0
+                ? new ResponseEntity<>("Aula eliminada correctamente", HttpStatus.OK)
+                : new ResponseEntity<>("Aula no encontrada", HttpStatus.NOT_FOUND);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<AulaDTO> obtenerPorId(@PathVariable Long id) {
         AulaDTO dto = aulaService.getById(id);

@@ -43,12 +43,24 @@ public class RecursoAulaService implements CRUDOperation<RecursoAulaDTO> {
         return recursoAulaRepository.findById(id).map(this::convertirADTO).orElse(null);
     }
 
+    public RecursoAulaDTO getByNombre(String nombre) {
+        return recursoAulaRepository.findByNombre(nombre).map(this::convertirADTO).orElse(null);
+    }
+
     @Override
     public int deleteById(Long id) {
         if (!recursoAulaRepository.existsById(id)) {
             return 1;
         }
         recursoAulaRepository.deleteById(id);
+        return 0;
+    }
+
+    public int deleteByNombre(String nombre) {
+        if (recursoAulaRepository.findByNombre(nombre).isEmpty()) {
+            return 1;
+        }
+        recursoAulaRepository.deleteByNombre(nombre);
         return 0;
     }
 
@@ -68,6 +80,11 @@ public class RecursoAulaService implements CRUDOperation<RecursoAulaDTO> {
         } catch (Exception e) {
             return 1;
         }
+    }
+
+    public int updateByNombre(String nombre, RecursoAulaDTO dto) {
+        RecursoAula recurso = recursoAulaRepository.findByNombre(nombre).orElse(null);
+        return recurso == null ? 1 : updateById(recurso.getId(), dto);
     }
 
     @Override

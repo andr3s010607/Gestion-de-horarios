@@ -1,0 +1,33 @@
+<div class="app-shell">
+  <aside class="sidebar" [class.abierta]="menuAbierto">
+    <a class="brand" routerLink="/inicio" (click)="menuAbierto = false">
+      <span class="brand-mark">✦</span>
+      <span><strong>Horario</strong><small>Universidad El Bosque</small></span>
+    </a>
+
+    <p class="nav-caption">Navegación</p>
+    <nav>
+      @for (item of navegacion; track item.ruta) {
+        @if (puedeVer(item.roles)) { <a [routerLink]="item.ruta" routerLinkActive="activo" (click)="menuAbierto = false"><span>{{ item.icono }}</span>{{ item.etiqueta }}</a> }
+      }
+    </nav>
+
+    <div class="sidebar-footer">
+      <span class="season">✿ Ciclo académico</span>
+      <p>Organiza el presente.<br />Diseña lo que sigue.</p>
+    </div>
+  </aside>
+
+  <main class="workspace">
+    <header class="topbar">
+      <button class="menu-toggle" type="button" (click)="menuAbierto = !menuAbierto" aria-label="Abrir navegación">☰</button>
+      <p><span class="olive-dot"></span>Espacio de planeación activo</p>
+      <div class="profile">
+        <span class="avatar">{{ correo.charAt(0).toUpperCase() }}</span>
+        <span><strong>{{ correo }}</strong><small>{{ rol }}</small></span>
+        <button type="button" class="signout" (click)="cerrarSesion()" title="Cerrar sesión">↗</button>
+      </div>
+    </header>
+    <section class="page-content"><router-outlet /></section>
+  </main>
+</div>

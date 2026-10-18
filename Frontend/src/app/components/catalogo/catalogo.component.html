@@ -1,0 +1,40 @@
+<div class="page-heading">
+  <div><span class="eyebrow">{{ configuracion.icono }} Catálogo académico</span><h1>{{ configuracion.titulo }}</h1><p>{{ configuracion.descripcion }}</p></div>
+  @if (configuracion.endpoint === 'asignaturas' && !soloLectura) { <a routerLink="/academico/semestres" class="text-link">Gestionar períodos →</a> }
+</div>
+
+<div class="catalog-layout" [class.solo-lectura]="soloLectura">
+  @if (!soloLectura) {
+  <section class="panel form-panel">
+    <div class="panel-head"><div><span class="section-label">{{ editando ? 'Edición' : 'Nuevo registro' }}</span><h2>{{ editando ? 'Ajusta la información' : 'Añade un elemento' }}</h2></div><button type="button" class="quiet-button" (click)="nuevo()">Limpiar</button></div>
+    @if (mensaje) { <p class="notice success">✦ {{ mensaje }}</p> } @if (error) { <p class="notice error">{{ error }}</p> }
+    <form (ngSubmit)="guardar()">
+      @for (campo of configuracion.campos; track campo.clave) {
+        <label>
+          <span>{{ campo.etiqueta }}</span>
+          @if (campo.referencia) { <select [(ngModel)]="borrador[campo.clave]" (ngModelChange)="alCambiarCampo(campo, $event)" [name]="campo.clave" required><option value="" disabled>{{ esGrupos && campo.clave === 'docenteId' && !borrador['asignaturaId'] ? 'Selecciona primero una asignatura' : 'Selecciona una opción' }}</option>@for (opcion of opciones(campo); track opcion.id) { <option [value]="opcion.id">{{ etiquetaReferencia(campo, opcion) }}</option> }</select> }
+          @else if (campo.tipo === 'select') { <select [(ngModel)]="borrador[campo.clave]" [name]="campo.clave" required><option value="" disabled>Selecciona una opción</option>@for (opcion of campo.opciones; track opcion.valor) { <option [value]="opcion.valor">{{ opcion.etiqueta }}</option> }</select> }
+          @else { <input [type]="campo.tipo" [(ngModel)]="borrador[campo.clave]" [name]="campo.clave" [required]="campo.tipo !== 'password' || !editando" /> }
+        </label>
+      }
+      @if (esDocentes && editando?.id) {
+        <fieldset class="teacher-subjects">
+          <legend>Materias que puede orientar</legend>
+          <p>Selecciona las asignaturas que este docente está habilitado para dictar.</p>
+          @if (cargandoMateriasDocente) { <span class="loading">Consultando materias…</span> }
+          @else if (!asignaturasDocente.length) { <span class="loading">Aún no hay materias disponibles en el plan de estudios.</span> }
+          @else { <div class="subject-options">@for (materia of asignaturasDocente; track materia.id) { <label class="subject-option"><input type="checkbox" [checked]="materiaSeleccionada(materia.id!)" (change)="alternarMateria(materia.id!, $any($event.target).checked)" /><span>{{ etiquetaMateria(materia) }}</span></label> }</div><button class="outline-button" type="button" (click)="guardarMateriasDocente()" [disabled]="guardando">{{ guardando ? 'Guardando…' : 'Guardar materias habilitadas' }}</button> }
+        </fieldset>
+      }
+      <button class="primary-button" type="submit" [disabled]="guardando">{{ guardando ? 'Guardando…' : (editando ? 'Guardar cambios' : 'Crear registro') }}</button>
+    </form>
+  </section>
+  }
+
+  <section class="panel list-panel">
+    <div class="panel-head"><div><span class="section-label">{{ registros.length }} registros</span><h2>Información disponible</h2></div><button type="button" class="quiet-button" (click)="cargar()">↻ Actualizar</button></div>
+    @if (configuracion.endpoint === 'asignaturas') { <div class="pensum-callout"><span>✦</span><p><strong>Pensum 2025 de Ingeniería de Sistemas</strong><small>Incluye {{ materiasPensum.length }} materias de la malla curricular.</small></p>@if (!soloLectura) { <button class="outline-button" type="button" (click)="importarPensum()" [disabled]="guardando">Cargar pensum</button> }</div> }
+    @if (error && soloLectura) { <p class="notice error">{{ error }}</p> }
+    @if (cargando) { <p class="loading">Consultando información…</p> } @else if (!registros.length) { <div class="empty-state"><span>⌁</span><p>Aún no hay registros. {{ soloLectura ? 'El plan estará disponible cuando administración lo publique.' : 'Crea el primero desde el formulario.' }}</p></div> } @else { <div class="record-list">@for (registro of registros; track registro.id) { <article><div><strong>{{ valor(registro, { clave: configuracion.columnaPrincipal, etiqueta: '', tipo: 'text' }) }}</strong><p>@for (campo of configuracion.campos.slice(0, 3); track campo.clave) { <span>{{ campo.etiqueta }}: {{ valor(registro, campo) }}</span> }</p></div>@if (!soloLectura) { <div class="row-actions"><button type="button" (click)="editar(registro)">Editar</button><button type="button" class="danger" (click)="eliminar(registro)">Eliminar</button></div> }</article> }</div> }
+  </section>
+</div>

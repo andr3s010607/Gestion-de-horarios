@@ -4,5 +4,10 @@ package co.edu.unbosque.gestorhorarios.enums;
 public enum RolUsuario {
     ADMINISTRADOR,
     PLANIFICADOR,
+    ESTUDIANTE,
+    /**
+     * Rol heredado. Los nuevos usuarios de consulta deben registrarse como
+     * ESTUDIANTE para conservar el lenguaje del producto.
+     */
     CONSULTA
 }

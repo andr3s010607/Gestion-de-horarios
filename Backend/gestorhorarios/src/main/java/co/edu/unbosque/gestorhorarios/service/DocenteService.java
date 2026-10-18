@@ -44,12 +44,24 @@ public class DocenteService implements CRUDOperation<DocenteDTO> {
         return docenteRepository.findById(id).map(this::convertirADTO).orElse(null);
     }
 
+    public DocenteDTO getByCorreo(String correo) {
+        return docenteRepository.findByCorreo(correo).map(this::convertirADTO).orElse(null);
+    }
+
     @Override
     public int deleteById(Long id) {
         if (!docenteRepository.existsById(id)) {
             return 1;
         }
         docenteRepository.deleteById(id);
+        return 0;
+    }
+
+    public int deleteByCorreo(String correo) {
+        if (docenteRepository.findByCorreo(correo).isEmpty()) {
+            return 1;
+        }
+        docenteRepository.deleteByCorreo(correo);
         return 0;
     }
 
@@ -69,6 +81,11 @@ public class DocenteService implements CRUDOperation<DocenteDTO> {
         } catch (Exception e) {
             return 1;
         }
+    }
+
+    public int updateByCorreo(String correo, DocenteDTO dto) {
+        Docente docente = docenteRepository.findByCorreo(correo).orElse(null);
+        return docente == null ? 1 : updateById(docente.getId(), dto);
     }
 
     @Override

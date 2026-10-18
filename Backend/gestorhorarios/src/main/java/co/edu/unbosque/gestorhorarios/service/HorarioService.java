@@ -159,6 +159,7 @@ public class HorarioService implements CRUDOperation<HorarioDTO> {
         List<String> errores = new ArrayList<>();
         List<SesionClase> sesiones = sesionClaseRepository.findByHorarioId(horarioId);
         for (Grupo grupo : gruposDelSemestre(horario.getSemestre().getId())) {
+            errores.addAll(sesionClaseService.validarGrupoParaProgramacion(grupo));
             long cantidad = sesiones.stream().filter(sesion -> sesion.getGrupo().getId().equals(grupo.getId())).count();
             if (cantidad != grupo.getAsignatura().getSesionesSemanales()) {
                 errores.add("El grupo " + grupo.getCodigo() + " requiere "

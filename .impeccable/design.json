@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-17T14:58:00-05:00",
+  "title": "Design System: Gestión de Horarios",
+  "extensions": {
+    "colorMeta": {
+      "olive": { "role": "primary", "displayName": "Oliva de coordinación", "canonical": "#6B705C", "tonalRamp": ["#30332B", "#464A3D", "#5B604E", "#6B705C", "#858B75", "#A4A991", "#C5C7AD", "#E2E3D6"] },
+      "sand": { "role": "neutral", "displayName": "Arena editorial", "canonical": "#F5EDE3", "tonalRamp": ["#4F473D", "#716657", "#958878", "#B9AC9B", "#D9CEBE", "#E9E0D4", "#F5EDE3", "#FFFDF8"] },
+      "terracotta": { "role": "secondary", "displayName": "Terracota de señal", "canonical": "#CB997E", "tonalRamp": ["#573B30", "#7A5140", "#9F6A55", "#CB997E", "#DBB29C", "#E8CBBB", "#F3E4DB", "#FCF4EF"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Titular editorial", "purpose": "Orientación y decisiones de alto nivel." },
+      "body": { "displayName": "Lectura operativa", "purpose": "Datos académicos, instrucciones y controles." }
+    },
+    "shadows": [
+      { "name": "surface-lift", "value": "0 14px 34px rgba(67,62,47,.10)", "purpose": "Agenda y superficies contextuales." },
+      { "name": "card-lift", "value": "0 20px 45px rgba(67,62,47,.14)", "purpose": "Tareas de acceso y concentración." }
+    ],
+    "motion": [
+      { "name": "state-transition", "value": "200ms ease", "purpose": "Foco, hover y feedback de controles." }
+    ],
+    "breakpoints": [
+      { "name": "stacked-layout", "value": "980px" },
+      { "name": "mobile", "value": "620px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Acción principal para confirmar una tarea académica.",
+      "html": "<button class=\"ds-btn-primary\">INICIAR SESIÓN</button>",
+      "css": ".ds-btn-primary { background:#6B705C; border:0; border-radius:.68rem; color:#FFFDF8; cursor:pointer; font:700 .84rem Manrope,sans-serif; letter-spacing:.02em; min-height:3.45rem; padding:0 1.5rem; transition:background .2s ease,transform .2s ease,box-shadow .2s ease; } .ds-btn-primary:hover { background:#5B604E; box-shadow:0 10px 18px rgba(67,62,47,.18); transform:translateY(-1px); } .ds-btn-primary:focus-visible { outline:3px solid rgba(203,153,126,.7); outline-offset:3px; }"
+    },
+    {
+      "name": "Academic Field",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "Campo de captura sobrio y legible sobre superficie de papel.",
+      "html": "<label class=\"ds-field\">Correo institucional<input type=\"email\" placeholder=\"tu@universidad.edu\"></label>",
+      "css": ".ds-field { color:#3E4036; display:grid; font:700 .85rem Manrope,sans-serif; gap:.58rem; } .ds-field input { background:transparent; border:1px solid #CEC6B7; border-radius:.68rem; box-sizing:border-box; color:#393D31; font:500 .94rem Manrope,sans-serif; height:3.2rem; outline:0; padding:0 .9rem; width:100%; } .ds-field input:focus { border-color:#6B705C; box-shadow:0 0 0 3px rgba(107,112,92,.14); } .ds-field input::placeholder { color:#999083; }"
+    },
+    {
+      "name": "Schedule Block",
+      "kind": "custom",
+      "refersTo": "schedule-block",
+      "description": "Unidad compacta para una sesión dentro de una agenda semanal.",
+      "html": "<article class=\"ds-session\"><strong>Cálculo I</strong><span>A-103 · 08:00</span></article>",
+      "css": ".ds-session { background:#C5C7AD; border-radius:.5rem; color:#464638; display:grid; font:700 .68rem Manrope,sans-serif; gap:.25rem; padding:.55rem .44rem; } .ds-session span { font-size:.54rem; font-weight:500; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "El folio académico vivo",
+    "overview": "La interfaz trata la planificación como una composición editorial: una superficie de papel cálido, jerarquía tipográfica calma y datos académicos que se leen como una agenda cuidadosamente anotada.",
+    "keyCharacteristics": ["Superficies crema con tinta oliva y líneas sepia discretas.", "Serif editorial para decisiones y momentos de orientación; sans sobria para datos y controles.", "Bloques de horario con color armónico, legibles antes que llamativos."],
+    "rules": [
+      { "name": "The Quiet Accent Rule", "body": "La terracota se reserva para distinguir; el oliva sostiene la acción.", "section": "colors" },
+      { "name": "The Two Voices Rule", "body": "La serif no compite con tablas, filtros ni acciones.", "section": "typography" },
+      { "name": "The Paper Lift Rule", "body": "Una sombra solo aparece cuando una superficie se separa funcionalmente de su papel de fondo.", "section": "elevation" }
+    ],
+    "dos": ["Do usar crema y arena como espacio de respiración antes de sumar paneles.", "Do mostrar datos académicos como evidencia visual del propósito de la interfaz."],
+    "donts": ["Don't usar gradientes, neones, vidrio decorativo o colores saturados.", "Don't usar la serif para datos densos, tablas, filtros o controles."]
+  }
+}

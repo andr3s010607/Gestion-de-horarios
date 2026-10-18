@@ -1,0 +1,9 @@
+<div class="toast-stack" aria-live="polite" aria-atomic="true">
+  @for (mensaje of mensajes$ | async; track mensaje.id) {
+    <article class="toast" [class]="mensaje.tipo">
+      <span class="toast-symbol">{{ simbolo(mensaje.tipo) }}</span>
+      <div><strong>{{ mensaje.titulo }}</strong>@if (mensaje.detalle) { <p>{{ mensaje.detalle }}</p> }</div>
+      <button type="button" (click)="cerrar(mensaje)" aria-label="Cerrar notificación">×</button>
+    </article>
+  }
+</div>

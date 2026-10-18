@@ -1,0 +1,63 @@
+<main class="login-shell">
+  <section class="folio" aria-label="Presentación de Gestión de Horarios">
+    <header class="folio-header">
+      <a class="brand" href="/" aria-label="Gestión de Horarios, inicio">
+        <svg aria-hidden="true" viewBox="0 0 32 32" class="brand-mark"><path d="M16 27C10 23.8 7 18.7 7 11.3 13.4 11.1 17.8 14.2 19 19.2c.5-6 3.9-10.2 10-12.1.2 8.7-4.1 15.7-13 19.9Z"/></svg>
+        <span>Gestión de Horarios</span>
+      </a>
+      <span class="folio-note">Planifica con claridad</span>
+    </header>
+
+    <div class="folio-intro">
+      <p class="section-label">Espacios · personas · aprendizaje</p>
+      <h1>Un semestre que encuentra su ritmo.</h1>
+      <p>Coordina asignaturas, aulas y docentes en una agenda académica clara, pensada para cada jornada.</p>
+    </div>
+
+    <section class="schedule-preview" aria-label="Vista ilustrativa de un horario semanal">
+      <div class="schedule-heading"><span>Vista semanal</span><span>Propuesta académica</span></div>
+      <div class="schedule-grid">
+        <div class="time-column" aria-hidden="true"><span>08:00</span><span>10:00</span><span>12:00</span><span>14:00</span></div>
+        <div class="day-column"><b>Lun</b><span class="session olive first">Cálculo I<small>A-103 · 08:00</small></span><span class="session sand third">Programación<small>B-205 · 12:00</small></span></div>
+        <div class="day-column"><b>Mar</b><span class="session terracotta second">Química<small>A-102 · 10:00</small></span><span class="session olive fourth">Inglés<small>B-201 · 14:00</small></span></div>
+        <div class="day-column"><b>Mié</b><span class="session olive first">Estadística<small>A-101 · 08:00</small></span><span class="session sand third">Bases de datos<small>B-205 · 12:00</small></span></div>
+        <div class="day-column"><b>Jue</b><span class="session terracotta second">Algoritmos<small>Lab. B-205 · 10:00</small></span></div>
+        <div class="day-column"><b>Vie</b><span class="session olive first">Metodología<small>A-101 · 08:00</small></span><span class="session sand fourth">Proyecto<small>C-301 · 14:00</small></span></div>
+      </div>
+    </section>
+
+    <footer class="folio-footer" aria-label="Etapas del proceso"><span>Planifica</span><i></i><span>Asigna</span><i></i><span>Coordina</span><i></i><span>Publica</span></footer>
+  </section>
+
+  <section class="access-panel" aria-labelledby="access-title">
+    <div class="access-card">
+      <div class="access-brand">
+        <svg aria-hidden="true" viewBox="0 0 32 32" class="brand-mark"><path d="M16 27C10 23.8 7 18.7 7 11.3 13.4 11.1 17.8 14.2 19 19.2c.5-6 3.9-10.2 10-12.1.2 8.7-4.1 15.7-13 19.9Z"/></svg>
+        <span>Gestión de Horarios</span>
+      </div>
+      <div class="access-copy"><h2 id="access-title">Bienvenido/a</h2><p>Ingresa para continuar con la planificación académica.</p></div>
+
+      <form #formulario="ngForm" (ngSubmit)="iniciarSesion()" novalidate>
+        <div class="field-group">
+          <label for="correo">Correo institucional</label>
+          <div class="field-control">
+            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3.5 5.5h17v13h-17zM4 6l8 6 8-6"/></svg>
+            <input id="correo" name="correo" type="email" [(ngModel)]="correo" autocomplete="email" placeholder="tu@universidad.edu" [disabled]="cargando" required />
+          </div>
+        </div>
+        <div class="field-group">
+          <label for="contrasena">Contraseña</label>
+          <div class="field-control">
+            <svg aria-hidden="true" viewBox="0 0 24 24"><rect x="5.5" y="10" width="13" height="10" rx="2"/><path d="M8.5 10V7a3.5 3.5 0 0 1 7 0v3M12 14v2"/></svg>
+            <input id="contrasena" name="contrasena" [type]="mostrarContrasena ? 'text' : 'password'" [(ngModel)]="contrasena" autocomplete="current-password" placeholder="Ingresa tu contraseña" [disabled]="cargando" required />
+            <button class="visibility-toggle" type="button" (click)="mostrarContrasena = !mostrarContrasena" [attr.aria-label]="mostrarContrasena ? 'Ocultar contraseña' : 'Mostrar contraseña'"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M2.8 12s3.3-5.5 9.2-5.5 9.2 5.5 9.2 5.5-3.3 5.5-9.2 5.5S2.8 12 2.8 12Z"/><circle cx="12" cy="12" r="2.4"/></svg></button>
+          </div>
+        </div>
+        <p class="form-feedback error" *ngIf="error" role="alert">{{ error }}</p>
+        <p class="form-feedback success" *ngIf="mensaje" role="status">{{ mensaje }}</p>
+        <button class="submit-button" type="submit" [disabled]="cargando"><span *ngIf="!cargando">Iniciar sesión</span><span *ngIf="cargando">Verificando acceso…</span><svg *ngIf="!cargando" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h13M13 7l5 5-5 5"/></svg></button>
+      </form>
+      <p class="access-help">¿Necesitas acceso? Comunícate con la administración académica.</p>
+    </div>
+  </section>
+</main>

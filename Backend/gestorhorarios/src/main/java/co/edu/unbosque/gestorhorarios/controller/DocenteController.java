@@ -40,6 +40,26 @@ public class DocenteController {
         return new ResponseEntity<>(docenteService.getAll(), HttpStatus.OK);
     }
 
+    @GetMapping("/correo/{correo}")
+    public ResponseEntity<DocenteDTO> obtenerPorCorreo(@PathVariable String correo) {
+        DocenteDTO dto = docenteService.getByCorreo(correo);
+        return dto == null ? new ResponseEntity<>(HttpStatus.NOT_FOUND) : new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
+    @PutMapping("/correo/{correo}")
+    public ResponseEntity<String> actualizarPorCorreo(@PathVariable String correo, @RequestBody DocenteDTO dto) {
+        return docenteService.updateByCorreo(correo, dto) == 0
+                ? new ResponseEntity<>("Docente actualizado correctamente", HttpStatus.OK)
+                : new ResponseEntity<>("Error al actualizar Docente", HttpStatus.BAD_REQUEST);
+    }
+
+    @DeleteMapping("/correo/{correo}")
+    public ResponseEntity<String> eliminarPorCorreo(@PathVariable String correo) {
+        return docenteService.deleteByCorreo(correo) == 0
+                ? new ResponseEntity<>("Docente eliminado correctamente", HttpStatus.OK)
+                : new ResponseEntity<>("Docente no encontrado", HttpStatus.NOT_FOUND);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<DocenteDTO> obtenerPorId(@PathVariable Long id) {
         DocenteDTO dto = docenteService.getById(id);

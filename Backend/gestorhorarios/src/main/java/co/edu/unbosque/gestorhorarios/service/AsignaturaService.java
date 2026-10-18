@@ -43,12 +43,24 @@ public class AsignaturaService implements CRUDOperation<AsignaturaDTO> {
         return asignaturaRepository.findById(id).map(this::convertirADTO).orElse(null);
     }
 
+    public AsignaturaDTO getByCodigo(String codigo) {
+        return asignaturaRepository.findByCodigo(codigo).map(this::convertirADTO).orElse(null);
+    }
+
     @Override
     public int deleteById(Long id) {
         if (!asignaturaRepository.existsById(id)) {
             return 1;
         }
         asignaturaRepository.deleteById(id);
+        return 0;
+    }
+
+    public int deleteByCodigo(String codigo) {
+        if (asignaturaRepository.findByCodigo(codigo).isEmpty()) {
+            return 1;
+        }
+        asignaturaRepository.deleteByCodigo(codigo);
         return 0;
     }
 
@@ -68,6 +80,11 @@ public class AsignaturaService implements CRUDOperation<AsignaturaDTO> {
         } catch (Exception e) {
             return 1;
         }
+    }
+
+    public int updateByCodigo(String codigo, AsignaturaDTO dto) {
+        Asignatura asignatura = asignaturaRepository.findByCodigo(codigo).orElse(null);
+        return asignatura == null ? 1 : updateById(asignatura.getId(), dto);
     }
 
     @Override

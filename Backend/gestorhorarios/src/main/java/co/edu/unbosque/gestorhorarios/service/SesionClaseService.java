@@ -26,6 +26,7 @@ import co.edu.unbosque.gestorhorarios.repository.GrupoRepository;
 import co.edu.unbosque.gestorhorarios.repository.HorarioRepository;
 import co.edu.unbosque.gestorhorarios.repository.RestriccionHorariaDocenteRepository;
 import co.edu.unbosque.gestorhorarios.repository.SesionClaseRepository;
+import co.edu.unbosque.gestorhorarios.repository.DocenteAsignaturaRepository;
 
 @Service
 @Transactional
@@ -39,13 +40,15 @@ public class SesionClaseService implements CRUDOperation<SesionClaseDTO> {
     private final AulaRecursoRepository aulaRecursoRepository;
     private final AsignaturaRecursoRequeridoRepository asignaturaRecursoRepository;
     private final ReglaHorarioService reglaHorarioService;
+    private final DocenteAsignaturaRepository docenteAsignaturaRepository;
 
     public SesionClaseService(SesionClaseRepository sesionClaseRepository, HorarioRepository horarioRepository,
             GrupoRepository grupoRepository, AulaRepository aulaRepository,
             RestriccionHorariaDocenteRepository restriccionRepository,
             AulaRecursoRepository aulaRecursoRepository,
             AsignaturaRecursoRequeridoRepository asignaturaRecursoRepository,
-            ReglaHorarioService reglaHorarioService) {
+            ReglaHorarioService reglaHorarioService,
+            DocenteAsignaturaRepository docenteAsignaturaRepository) {
         this.sesionClaseRepository = sesionClaseRepository;
         this.horarioRepository = horarioRepository;
         this.grupoRepository = grupoRepository;
@@ -54,6 +57,7 @@ public class SesionClaseService implements CRUDOperation<SesionClaseDTO> {
         this.aulaRecursoRepository = aulaRecursoRepository;
         this.asignaturaRecursoRepository = asignaturaRecursoRepository;
         this.reglaHorarioService = reglaHorarioService;
+        this.docenteAsignaturaRepository = docenteAsignaturaRepository;
     }
 
     @Override
@@ -158,6 +162,7 @@ public class SesionClaseService implements CRUDOperation<SesionClaseDTO> {
         if (grupo.getDocente() == null || !grupo.getDocente().isActivo()) {
             errores.add("El grupo debe tener un docente activo asignado");
         }
+        validarHabilitacionDocente(grupo, errores);
         validarCupo(grupo, aula, errores);
         validarRecursos(grupo, aula, errores);
         validarContraSesionesExistentes(dto, sesionExcluidaId, grupo, horario, errores);
@@ -225,6 +230,28 @@ public class SesionClaseService implements CRUDOperation<SesionClaseDTO> {
         }
         if (grupo.getCupoPlaneado() > aula.getCapacidad()) {
             errores.add("El cupo planeado del grupo supera la capacidad del aula");
+        }
+    }
+
+    public List<String> validarGrupoParaProgramacion(Grupo grupo) {
+        List<String> errores = new ArrayList<>();
+        if (grupo.getDocente() == null || !grupo.getDocente().isActivo()) {
+            errores.add("El grupo " + grupo.getCodigo() + " debe tener un docente activo asignado");
+            return errores;
+        }
+        validarHabilitacionDocente(grupo, errores);
+        return errores;
+    }
+
+    private void validarHabilitacionDocente(Grupo grupo, List<String> errores) {
+        if (grupo.getDocente() == null) {
+            return;
+        }
+        boolean habilitado = docenteAsignaturaRepository.findAll().stream()
+                .anyMatch(relacion -> relacion.getDocente().getId().equals(grupo.getDocente().getId())
+                        && relacion.getAsignatura().getId().equals(grupo.getAsignatura().getId()));
+        if (!habilitado) {
+            errores.add("El docente asignado al grupo no está habilitado para dictar esta asignatura");
         }
     }
 

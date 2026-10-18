@@ -40,6 +40,26 @@ public class RecursoAulaController {
         return new ResponseEntity<>(recursoAulaService.getAll(), HttpStatus.OK);
     }
 
+    @GetMapping("/nombre/{nombre}")
+    public ResponseEntity<RecursoAulaDTO> obtenerPorNombre(@PathVariable String nombre) {
+        RecursoAulaDTO dto = recursoAulaService.getByNombre(nombre);
+        return dto == null ? new ResponseEntity<>(HttpStatus.NOT_FOUND) : new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
+    @PutMapping("/nombre/{nombre}")
+    public ResponseEntity<String> actualizarPorNombre(@PathVariable String nombre, @RequestBody RecursoAulaDTO dto) {
+        return recursoAulaService.updateByNombre(nombre, dto) == 0
+                ? new ResponseEntity<>("Recurso actualizado correctamente", HttpStatus.OK)
+                : new ResponseEntity<>("Error al actualizar Recurso", HttpStatus.BAD_REQUEST);
+    }
+
+    @DeleteMapping("/nombre/{nombre}")
+    public ResponseEntity<String> eliminarPorNombre(@PathVariable String nombre) {
+        return recursoAulaService.deleteByNombre(nombre) == 0
+                ? new ResponseEntity<>("Recurso eliminado correctamente", HttpStatus.OK)
+                : new ResponseEntity<>("Recurso no encontrado", HttpStatus.NOT_FOUND);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<RecursoAulaDTO> obtenerPorId(@PathVariable Long id) {
         RecursoAulaDTO dto = recursoAulaService.getById(id);

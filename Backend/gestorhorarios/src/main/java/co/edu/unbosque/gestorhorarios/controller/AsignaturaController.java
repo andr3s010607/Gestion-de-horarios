@@ -40,6 +40,26 @@ public class AsignaturaController {
         return new ResponseEntity<>(asignaturaService.getAll(), HttpStatus.OK);
     }
 
+    @GetMapping("/codigo/{codigo}")
+    public ResponseEntity<AsignaturaDTO> obtenerPorCodigo(@PathVariable String codigo) {
+        AsignaturaDTO dto = asignaturaService.getByCodigo(codigo);
+        return dto == null ? new ResponseEntity<>(HttpStatus.NOT_FOUND) : new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
+    @PutMapping("/codigo/{codigo}")
+    public ResponseEntity<String> actualizarPorCodigo(@PathVariable String codigo, @RequestBody AsignaturaDTO dto) {
+        return asignaturaService.updateByCodigo(codigo, dto) == 0
+                ? new ResponseEntity<>("Asignatura actualizada correctamente", HttpStatus.OK)
+                : new ResponseEntity<>("Error al actualizar Asignatura", HttpStatus.BAD_REQUEST);
+    }
+
+    @DeleteMapping("/codigo/{codigo}")
+    public ResponseEntity<String> eliminarPorCodigo(@PathVariable String codigo) {
+        return asignaturaService.deleteByCodigo(codigo) == 0
+                ? new ResponseEntity<>("Asignatura eliminada correctamente", HttpStatus.OK)
+                : new ResponseEntity<>("Asignatura no encontrada", HttpStatus.NOT_FOUND);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<AsignaturaDTO> obtenerPorId(@PathVariable Long id) {
         AsignaturaDTO dto = asignaturaService.getById(id);

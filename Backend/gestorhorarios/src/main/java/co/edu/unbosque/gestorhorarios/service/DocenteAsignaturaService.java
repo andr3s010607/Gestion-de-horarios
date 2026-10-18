@@ -11,6 +11,7 @@ import co.edu.unbosque.gestorhorarios.entity.Docente;
 import co.edu.unbosque.gestorhorarios.repository.DocenteRepository;
 import co.edu.unbosque.gestorhorarios.entity.Asignatura;
 import co.edu.unbosque.gestorhorarios.repository.AsignaturaRepository;
+import co.edu.unbosque.gestorhorarios.repository.GrupoRepository;
 
 @Service
 public class DocenteAsignaturaService implements CRUDOperation<DocenteAsignaturaDTO> {
@@ -18,11 +19,13 @@ public class DocenteAsignaturaService implements CRUDOperation<DocenteAsignatura
     private final DocenteAsignaturaRepository docenteAsignaturaRepository;
     private final DocenteRepository docenteRepository;
     private final AsignaturaRepository asignaturaRepository;
+    private final GrupoRepository grupoRepository;
 
-    public DocenteAsignaturaService(DocenteAsignaturaRepository docenteAsignaturaRepository, DocenteRepository docenteRepository, AsignaturaRepository asignaturaRepository) {
+    public DocenteAsignaturaService(DocenteAsignaturaRepository docenteAsignaturaRepository, DocenteRepository docenteRepository, AsignaturaRepository asignaturaRepository, GrupoRepository grupoRepository) {
         this.docenteAsignaturaRepository = docenteAsignaturaRepository;
         this.docenteRepository = docenteRepository;
         this.asignaturaRepository = asignaturaRepository;
+        this.grupoRepository = grupoRepository;
     }
 
     @Override
@@ -53,7 +56,15 @@ public class DocenteAsignaturaService implements CRUDOperation<DocenteAsignatura
 
     @Override
     public int deleteById(Long id) {
-        if (!docenteAsignaturaRepository.existsById(id)) {
+        DocenteAsignatura relacion = docenteAsignaturaRepository.findById(id).orElse(null);
+        if (relacion == null) {
+            return 1;
+        }
+        boolean enUso = grupoRepository.findAll().stream()
+                .anyMatch(grupo -> grupo.getDocente() != null
+                        && grupo.getDocente().getId().equals(relacion.getDocente().getId())
+                        && grupo.getAsignatura().getId().equals(relacion.getAsignatura().getId()));
+        if (enUso) {
             return 1;
         }
         docenteAsignaturaRepository.deleteById(id);
@@ -91,12 +102,12 @@ public class DocenteAsignaturaService implements CRUDOperation<DocenteAsignatura
     private DocenteAsignatura convertirAEntidad(DocenteAsignaturaDTO dto) {
         DocenteAsignatura entity = new DocenteAsignatura();
         Docente docente = dto.getDocenteId() == null ? null : docenteRepository.findById(dto.getDocenteId()).orElse(null);
-        if (docente == null) {
+        if (docente == null || !docente.isActivo()) {
             return null;
         }
         entity.setDocente(docente);
         Asignatura asignatura = dto.getAsignaturaId() == null ? null : asignaturaRepository.findById(dto.getAsignaturaId()).orElse(null);
-        if (asignatura == null) {
+        if (asignatura == null || !asignatura.isActiva()) {
             return null;
         }
         entity.setAsignatura(asignatura);

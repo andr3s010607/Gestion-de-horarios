@@ -50,15 +50,35 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/error").permitAll()
                         .requestMatchers("/usuarios/**").hasAuthority("ROLE_ADMINISTRADOR")
-                        .requestMatchers(HttpMethod.POST, "/parametros-sistema/**")
+                        .requestMatchers("/parametros-sistema/**")
                         .hasAuthority("ROLE_ADMINISTRADOR")
-                        .requestMatchers(HttpMethod.PUT, "/parametros-sistema/**")
-                        .hasAuthority("ROLE_ADMINISTRADOR")
-                        .requestMatchers(HttpMethod.DELETE, "/parametros-sistema/**")
-                        .hasAuthority("ROLE_ADMINISTRADOR")
-                        .requestMatchers(HttpMethod.POST, "/**").hasAnyAuthority("ROLE_ADMINISTRADOR", "ROLE_PLANIFICADOR")
-                        .requestMatchers(HttpMethod.PUT, "/**").hasAnyAuthority("ROLE_ADMINISTRADOR", "ROLE_PLANIFICADOR")
-                        .requestMatchers(HttpMethod.DELETE, "/**").hasAnyAuthority("ROLE_ADMINISTRADOR", "ROLE_PLANIFICADOR")
+                        .requestMatchers(HttpMethod.POST, "/asignaturas/**", "/semestres/**", "/grupos/**",
+                                "/docentes/**", "/aulas/**", "/recursos-aula/**", "/docentes-asignaturas/**",
+                                "/restricciones-horarias-docente/**", "/asignaturas-recursos-requeridos/**",
+                                "/aulas-recursos/**")
+                        .hasAnyAuthority("ROLE_ADMINISTRADOR", "ROLE_PLANIFICADOR")
+                        .requestMatchers(HttpMethod.PUT, "/asignaturas/**", "/semestres/**", "/grupos/**",
+                                "/docentes/**", "/aulas/**", "/recursos-aula/**", "/docentes-asignaturas/**",
+                                "/restricciones-horarias-docente/**", "/asignaturas-recursos-requeridos/**",
+                                "/aulas-recursos/**")
+                        .hasAnyAuthority("ROLE_ADMINISTRADOR", "ROLE_PLANIFICADOR")
+                        .requestMatchers(HttpMethod.DELETE, "/asignaturas/**", "/semestres/**", "/grupos/**",
+                                "/docentes/**", "/aulas/**", "/recursos-aula/**", "/docentes-asignaturas/**",
+                                "/restricciones-horarias-docente/**", "/asignaturas-recursos-requeridos/**",
+                                "/aulas-recursos/**")
+                        .hasAnyAuthority("ROLE_ADMINISTRADOR", "ROLE_PLANIFICADOR")
+                        .requestMatchers(HttpMethod.POST, "/horarios/**", "/sesiones-clase/**")
+                        .hasAnyAuthority("ROLE_ADMINISTRADOR", "ROLE_PLANIFICADOR", "ROLE_ESTUDIANTE", "ROLE_CONSULTA")
+                        .requestMatchers(HttpMethod.PUT, "/horarios/**", "/sesiones-clase/**")
+                        .hasAnyAuthority("ROLE_ADMINISTRADOR", "ROLE_PLANIFICADOR", "ROLE_ESTUDIANTE", "ROLE_CONSULTA")
+                        .requestMatchers(HttpMethod.DELETE, "/horarios/**", "/sesiones-clase/**")
+                        .hasAnyAuthority("ROLE_ADMINISTRADOR", "ROLE_PLANIFICADOR", "ROLE_ESTUDIANTE", "ROLE_CONSULTA")
+                        .requestMatchers(HttpMethod.POST, "/**")
+                        .hasAnyAuthority("ROLE_ADMINISTRADOR", "ROLE_PLANIFICADOR", "ROLE_ESTUDIANTE")
+                        .requestMatchers(HttpMethod.PUT, "/**")
+                        .hasAnyAuthority("ROLE_ADMINISTRADOR", "ROLE_PLANIFICADOR", "ROLE_ESTUDIANTE")
+                        .requestMatchers(HttpMethod.DELETE, "/**")
+                        .hasAnyAuthority("ROLE_ADMINISTRADOR", "ROLE_PLANIFICADOR", "ROLE_ESTUDIANTE")
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
