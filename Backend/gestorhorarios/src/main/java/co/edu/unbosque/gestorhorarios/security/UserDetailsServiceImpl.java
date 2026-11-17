@@ -1,11 +1,10 @@
 package co.edu.unbosque.gestorhorarios.security;
 
+import co.edu.unbosque.gestorhorarios.repository.UsuarioRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import co.edu.unbosque.gestorhorarios.repository.UsuarioRepository;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -17,8 +16,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String correo) throws UsernameNotFoundException {
-        return usuarioRepository.findByCorreo(correo)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con correo: " + correo));
+    public UserDetails loadUserByUsername(String nombreUsuario) throws UsernameNotFoundException {
+        return usuarioRepository.findByNombreUsuario(nombreUsuario)
+                .orElseThrow(() -> new UsernameNotFoundException("No existe el usuario " + nombreUsuario));
     }
 }

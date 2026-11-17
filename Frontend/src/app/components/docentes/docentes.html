@@ -1,0 +1,154 @@
+<section class="pagina">
+  <div class="encabezado-pagina">
+    <div>
+      <h2>Docentes</h2>
+      <p>Planta docente con su vinculación, restricciones horarias y asignaturas que puede dictar.</p>
+    </div>
+    @if (auth.esAdministrador()) {
+      <div class="acciones-encabezado">
+        <button type="button" class="btn btn-primario" (click)="abrirNuevo()">
+          <app-icono nombre="mas" [tamano]="18" /> Nuevo docente
+        </button>
+      </div>
+    }
+  </div>
+
+  <div class="tarjeta">
+    <div class="barra-herramientas">
+      <label class="buscador">
+        <span class="oculto-visual">Buscar docente</span>
+        <app-icono nombre="buscar" [tamano]="16" />
+        <input type="search" placeholder="Buscar por nombre" [value]="termino()" (input)="alBuscar($any($event.target).value)" />
+      </label>
+      @if (!auth.tieneRol(['ESTUDIANTE'])) {
+        <label>
+          <span class="oculto-visual">Filtrar por vinculación</span>
+          <select class="filtro" [value]="filtroVinculacion()" (change)="alFiltrar($any($event.target).value)">
+            <option value="">Todas las vinculaciones</option>
+            @for (opcion of vinculaciones; track opcion.valor) {
+              <option [value]="opcion.valor">{{ opcion.etiqueta }}</option>
+            }
+          </select>
+        </label>
+      }
+    </div>
+
+    @if (cargando()) {
+      <app-spinner texto="Cargando docentes" />
+    } @else if (filtrados().length === 0) {
+      @if (docentes().length === 0) {
+        <app-estado-vacio icono="personas" titulo="Aún no hay docentes" mensaje="Registra a los docentes para poder asignarlos a los grupos.">
+          @if (auth.esAdministrador()) {
+            <button type="button" class="btn btn-primario" (click)="abrirNuevo()">Registrar el primero</button>
+          }
+        </app-estado-vacio>
+      } @else {
+        <app-estado-vacio icono="buscar" titulo="Sin coincidencias" mensaje="Ningún docente coincide con la búsqueda o el filtro." />
+      }
+    } @else {
+      <div class="tabla-contenedor">
+        <table class="tabla">
+          <thead>
+            <tr>
+              <th>Docente</th>
+              @if (!auth.tieneRol(['ESTUDIANTE'])) {
+                <th>Vinculación</th>
+                <th>Restricciones</th>
+                <th>Asignaturas habilitadas</th>
+              }
+              <th>Grupos</th>
+              @if (puedeVerDetalle()) { <th><span class="oculto-visual">Acciones</span></th> }
+            </tr>
+          </thead>
+          <tbody>
+            @for (docente of visibles(); track docente.id) {
+              <tr>
+                <td>
+                  <span class="nombre">
+                    <span class="avatar" aria-hidden="true">{{ iniciales(docente.nombre) }}</span>
+                    @if (veDetalle(docente)) {
+                      <a class="enlace" [routerLink]="['/docentes', docente.id]">{{ docente.nombre }}</a>
+                    } @else {
+                      <span>{{ docente.nombre }}</span>
+                    }
+                    @if (esPropio(docente)) { <span class="pildora pildora-verde propio">Tú</span> }
+                  </span>
+                </td>
+                @if (!auth.tieneRol(['ESTUDIANTE'])) {
+                  @if (veDetalle(docente)) {
+                    <td><span class="pildora pildora-tan">{{ etiquetaVinculacion(docente.vinculacion) }}</span></td>
+                    <td>{{ docente.restricciones?.length ?? 0 }}</td>
+                    <td>{{ docente.asignaturasHabilitadas?.length ?? 0 }}</td>
+                  } @else {
+                    <td><span class="texto-suave" title="Solo el administrador y el propio docente ven este dato">Reservado</span></td>
+                    <td><span class="texto-suave">—</span></td>
+                    <td><span class="texto-suave">—</span></td>
+                  }
+                }
+                <td>
+                  @if (gruposDe(docente) > 0) { {{ gruposDe(docente) }} } @else { <span class="texto-suave">Ninguno</span> }
+                </td>
+                @if (puedeVerDetalle()) {
+                  <td>
+                    <div class="acciones">
+                      @if (veDetalle(docente)) {
+                      <a class="btn-icono" [routerLink]="['/docentes', docente.id]" [attr.aria-label]="'Ver detalle de ' + docente.nombre" title="Ver detalle">
+                        <app-icono nombre="ojo" [tamano]="16" />
+                      </a>
+                      }
+                      @if (auth.esAdministrador()) {
+                        <button type="button" class="btn-icono" (click)="abrirEdicion(docente)" [attr.aria-label]="'Editar ' + docente.nombre" title="Editar">
+                          <app-icono nombre="editar" [tamano]="16" />
+                        </button>
+                        <button type="button" class="btn-icono peligro" (click)="eliminar(docente)" [disabled]="gruposDe(docente) > 0"
+                                [attr.aria-label]="'Eliminar ' + docente.nombre"
+                                [title]="gruposDe(docente) > 0 ? 'No se puede eliminar: tiene grupos asignados' : 'Eliminar'">
+                          <app-icono nombre="eliminar" [tamano]="16" />
+                        </button>
+                      }
+                    </div>
+                  </td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <app-paginador [total]="filtrados().length" [tamano]="tamanoPagina" [(pagina)]="pagina" />
+    }
+  </div>
+</section>
+
+@if (modalAbierto()) {
+  <app-modal [titulo]="editando() ? 'Editar docente' : 'Nuevo docente'" (cerrar)="cerrarModal()">
+    <form class="formulario" [formGroup]="formulario" (ngSubmit)="guardar()" novalidate>
+      <div class="campo completo" [class.invalido]="invalido('nombre')">
+        <label for="nombre">Nombre completo</label>
+        <input id="nombre" formControlName="nombre" maxlength="120" placeholder="Ej. Laura Gómez" />
+        @if (invalido('nombre')) {
+          <span class="error-campo">
+            @if (formulario.controls.nombre.hasError('required')) { El nombre del docente es obligatorio }
+            @else { El nombre admite hasta 120 caracteres }
+          </span>
+        }
+      </div>
+      <div class="campo completo" [class.invalido]="invalido('vinculacion')">
+        <label for="vinculacion">Tipo de vinculación</label>
+        <select id="vinculacion" formControlName="vinculacion">
+          <option value="" disabled>Selecciona la vinculación</option>
+          @for (opcion of vinculaciones; track opcion.valor) {
+            <option [value]="opcion.valor">{{ opcion.etiqueta }}</option>
+          }
+        </select>
+        @if (invalido('vinculacion')) { <span class="error-campo">El tipo de vinculación del docente es obligatorio</span> }
+      </div>
+      <div class="acciones-formulario">
+        <button type="button" class="btn btn-secundario" (click)="cerrarModal()" [disabled]="guardando()">Cancelar</button>
+        <button type="submit" class="btn btn-primario" [disabled]="guardando()">
+          @if (guardando()) { <app-spinner class="en-linea" /> }
+          {{ editando() ? 'Guardar cambios' : 'Crear docente' }}
+        </button>
+      </div>
+    </form>
+  </app-modal>
+}

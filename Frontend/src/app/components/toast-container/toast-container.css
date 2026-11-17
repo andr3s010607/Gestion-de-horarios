@@ -1,0 +1,108 @@
+.pila {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: min(380px, calc(100vw - 32px));
+}
+
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 14px 14px 16px;
+  border-radius: var(--radio);
+  background: var(--wood-bark);
+  color: var(--texto-claro);
+  box-shadow: 0 12px 32px rgba(35, 54, 26, 0.28);
+  animation: entrar 0.2s ease-out;
+}
+
+.marca {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.exito .marca {
+  background: var(--azeitona);
+  color: var(--moss-oscuro);
+}
+
+.error .marca {
+  background: #D97A63;
+  color: #3A140B;
+}
+
+.advertencia .marca {
+  background: #E2B65A;
+  color: #3A2A08;
+}
+
+.info .marca {
+  background: #9DB7C0;
+  color: #17262B;
+}
+
+.contenido {
+  flex: 1;
+  min-width: 0;
+  padding-top: 4px;
+}
+
+.contenido strong {
+  display: block;
+  font-weight: 600;
+  font-size: 14.5px;
+}
+
+.contenido p {
+  margin: 4px 0 0;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: rgba(243, 238, 226, 0.85);
+}
+
+.contenido ul {
+  margin: 6px 0 0;
+  padding-left: 18px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(243, 238, 226, 0.85);
+}
+
+.cerrar {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: rgba(243, 238, 226, 0.7);
+  cursor: pointer;
+}
+
+.cerrar:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+@keyframes entrar {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    animation: none;
+  }
+}

@@ -1,0 +1,55 @@
+.marco {
+  display: grid;
+  grid-template-columns: 248px minmax(0, 1fr);
+  gap: 16px;
+  min-height: 100vh;
+  padding: 16px;
+}
+
+.lateral {
+  position: sticky;
+  top: 16px;
+  height: calc(100vh - 32px);
+}
+
+.area {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+  padding: 24px 28px 32px;
+  border-radius: var(--radio-lg);
+  background: var(--crema);
+}
+
+.contenido {
+  min-width: 0;
+}
+
+.velo {
+  display: none;
+}
+
+@media (max-width: 960px) {
+  .marco {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 10px;
+  }
+
+  .lateral {
+    position: static;
+    height: 0;
+  }
+
+  .velo {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 700;
+    background: rgba(35, 54, 26, 0.4);
+  }
+
+  .area {
+    padding: 18px 16px 24px;
+  }
+}

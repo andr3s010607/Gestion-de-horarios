@@ -1,43 +1,41 @@
 package co.edu.unbosque.gestorhorarios.entity;
 
-import java.util.Objects;
-
+import co.edu.unbosque.gestorhorarios.enums.TipoAula;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 
-/** Curso que debe ser programado dentro de un semestre. */
 @Entity
-@Table(name = "asignaturas")
+@Table(name = "asignatura")
 public class Asignatura {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 30)
+    @Column(nullable = false, unique = true, length = 20)
     private String codigo;
 
-    @Column(nullable = false, length = 150)
+    @Column(nullable = false, length = 120)
     private String nombre;
 
-    @Column(nullable = false)
-    private Integer sesionesSemanales;
+    @Min(1)
+    @Max(4)
+    @Column(name = "sesiones_semana", nullable = false)
+    private Integer sesionesSemana;
 
-    @Column(nullable = false)
-    private boolean activa = true;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_aula_requerido", nullable = false, length = 20)
+    private TipoAula tipoAulaRequerido;
 
     public Asignatura() {
-    }
-
-    public Asignatura(String codigo, String nombre, Integer sesionesSemanales, boolean activa) {
-        this.codigo = codigo;
-        this.nombre = nombre;
-        this.sesionesSemanales = sesionesSemanales;
-        this.activa = activa;
     }
 
     public Long getId() {
@@ -64,45 +62,19 @@ public class Asignatura {
         this.nombre = nombre;
     }
 
-    public Integer getSesionesSemanales() {
-        return sesionesSemanales;
+    public Integer getSesionesSemana() {
+        return sesionesSemana;
     }
 
-    public void setSesionesSemanales(Integer sesionesSemanales) {
-        this.sesionesSemanales = sesionesSemanales;
+    public void setSesionesSemana(Integer sesionesSemana) {
+        this.sesionesSemana = sesionesSemana;
     }
 
-    public boolean isActiva() {
-        return activa;
+    public TipoAula getTipoAulaRequerido() {
+        return tipoAulaRequerido;
     }
 
-    public void setActiva(boolean activa) {
-        this.activa = activa;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, codigo, nombre, sesionesSemanales, activa);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Asignatura other = (Asignatura) obj;
-        return Objects.equals(id, other.id)
-                && Objects.equals(codigo, other.codigo)
-                && Objects.equals(nombre, other.nombre)
-                && Objects.equals(sesionesSemanales, other.sesionesSemanales)
-                && activa == other.activa;
-    }
-
-    @Override
-    public String toString() {
-        return "Asignatura [id=" + id + ", codigo=" + codigo + ", nombre=" + nombre + ", sesionesSemanales=" + sesionesSemanales + ", activa=" + activa + "]";
+    public void setTipoAulaRequerido(TipoAula tipoAulaRequerido) {
+        this.tipoAulaRequerido = tipoAulaRequerido;
     }
 }

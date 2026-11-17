@@ -1,0 +1,131 @@
+<section class="pagina">
+  <div class="encabezado-pagina">
+    <div>
+      <h2>Aulas</h2>
+      <p>{{ aulas().length }} aulas registradas · capacidad total de {{ capacidadTotal() }} estudiantes.</p>
+    </div>
+    @if (auth.esAdministrador()) {
+      <div class="acciones-encabezado">
+        <button type="button" class="btn btn-primario" (click)="abrirNueva()">
+          <app-icono nombre="mas" [tamano]="18" /> Nueva aula
+        </button>
+      </div>
+    }
+  </div>
+
+  <div class="tarjeta">
+    <div class="barra-herramientas">
+      <label class="buscador">
+        <span class="oculto-visual">Buscar aula</span>
+        <app-icono nombre="buscar" [tamano]="16" />
+        <input type="search" placeholder="Buscar por código" [value]="termino()" (input)="alBuscar($any($event.target).value)" />
+      </label>
+      <label>
+        <span class="oculto-visual">Filtrar por tipo</span>
+        <select class="filtro" [value]="filtroTipo()" (change)="alFiltrar($any($event.target).value)">
+          <option value="">Todos los tipos</option>
+          @for (tipo of tiposAula; track tipo.valor) {
+            <option [value]="tipo.valor">{{ tipo.etiqueta }}</option>
+          }
+        </select>
+      </label>
+    </div>
+
+    @if (cargando()) {
+      <app-spinner texto="Cargando aulas" />
+    } @else if (filtradas().length === 0) {
+      @if (aulas().length === 0) {
+        <app-estado-vacio icono="edificio" titulo="Aún no hay aulas" mensaje="Registra las aulas disponibles para poder ubicar las sesiones de clase.">
+          @if (auth.esAdministrador()) {
+            <button type="button" class="btn btn-primario" (click)="abrirNueva()">Registrar la primera</button>
+          }
+        </app-estado-vacio>
+      } @else {
+        <app-estado-vacio icono="buscar" titulo="Sin coincidencias" mensaje="Ninguna aula coincide con la búsqueda o el filtro." />
+      }
+    } @else {
+      <div class="tabla-contenedor">
+        <table class="tabla">
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Capacidad</th>
+              <th>Tipo</th>
+              <th>Sesiones asignadas</th>
+              @if (auth.esAdministrador()) { <th><span class="oculto-visual">Acciones</span></th> }
+            </tr>
+          </thead>
+          <tbody>
+            @for (aula of visibles(); track aula.id) {
+              <tr>
+                <td><span class="codigo">{{ aula.codigo }}</span></td>
+                <td>{{ aula.capacidad }} estudiantes</td>
+                <td>
+                  <span class="pildora" [class.pildora-verde]="aula.tipo === 'COMUN'" [class.pildora-petroleo]="aula.tipo === 'COMPUTADORES'"
+                        [class.pildora-tan]="aula.tipo === 'SILLAS_MOVILES'">{{ etiquetaTipo(aula.tipo) }}</span>
+                </td>
+                <td>
+                  @if (sesionesDe(aula) > 0) { {{ sesionesDe(aula) }} } @else { <span class="texto-suave">Ninguna</span> }
+                </td>
+                @if (auth.esAdministrador()) {
+                  <td>
+                    <div class="acciones">
+                      <button type="button" class="btn-icono" (click)="abrirEdicion(aula)" [attr.aria-label]="'Editar ' + aula.codigo" title="Editar">
+                        <app-icono nombre="editar" [tamano]="16" />
+                      </button>
+                      <button type="button" class="btn-icono peligro" (click)="eliminar(aula)" [disabled]="sesionesDe(aula) > 0"
+                              [attr.aria-label]="'Eliminar ' + aula.codigo"
+                              [title]="sesionesDe(aula) > 0 ? 'No se puede eliminar: tiene sesiones asignadas' : 'Eliminar'">
+                        <app-icono nombre="eliminar" [tamano]="16" />
+                      </button>
+                    </div>
+                  </td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <app-paginador [total]="filtradas().length" [tamano]="tamanoPagina" [(pagina)]="pagina" />
+    }
+  </div>
+</section>
+
+@if (modalAbierto()) {
+  <app-modal [titulo]="editando() ? 'Editar aula' : 'Nueva aula'" (cerrar)="cerrarModal()">
+    <form class="formulario" [formGroup]="formulario" (ngSubmit)="guardar()" novalidate>
+      <div class="campo" [class.invalido]="invalido('codigo')">
+        <label for="codigo">Código</label>
+        <input id="codigo" formControlName="codigo" maxlength="20" placeholder="Ej. A-101" autocomplete="off" />
+        @if (invalido('codigo')) {
+          <span class="error-campo">
+            @if (formulario.controls.codigo.hasError('required')) { El código del aula es obligatorio }
+            @else { El código admite hasta 20 caracteres }
+          </span>
+        }
+      </div>
+      <div class="campo" [class.invalido]="invalido('capacidad')">
+        <label for="capacidad">Capacidad</label>
+        <input id="capacidad" type="number" min="1" formControlName="capacidad" />
+        @if (invalido('capacidad')) { <span class="error-campo">La capacidad del aula debe ser un entero positivo</span> }
+      </div>
+      <div class="campo completo" [class.invalido]="invalido('tipo')">
+        <label for="tipo">Tipo de aula</label>
+        <select id="tipo" formControlName="tipo">
+          <option value="" disabled>Selecciona un tipo</option>
+          @for (tipo of tiposAula; track tipo.valor) {
+            <option [value]="tipo.valor">{{ tipo.etiqueta }}</option>
+          }
+        </select>
+        @if (invalido('tipo')) { <span class="error-campo">El tipo de aula es obligatorio</span> }
+      </div>
+      <div class="acciones-formulario">
+        <button type="button" class="btn btn-secundario" (click)="cerrarModal()" [disabled]="guardando()">Cancelar</button>
+        <button type="submit" class="btn btn-primario" [disabled]="guardando()">
+          @if (guardando()) { <app-spinner class="en-linea" /> }
+          {{ editando() ? 'Guardar cambios' : 'Crear aula' }}
+        </button>
+      </div>
+    </form>
+  </app-modal>
+}

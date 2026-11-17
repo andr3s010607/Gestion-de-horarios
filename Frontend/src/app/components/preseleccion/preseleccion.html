@@ -1,0 +1,162 @@
+<section class="pagina">
+  <div class="encabezado-pagina">
+    <div>
+      <h2>Preselección de grupos</h2>
+      <p>Elige un grupo por asignatura y confirma tu combinación. No descuenta cupo ni es una inscripción formal. Cuando la preselección se cierra, puedes seguir consultando lo que confirmaste.</p>
+    </div>
+  </div>
+
+  @if (cargando()) {
+    <div class="tarjeta"><app-spinner texto="Cargando horarios" /></div>
+  } @else if (horarios().length === 0) {
+    <div class="tarjeta">
+      <app-estado-vacio icono="calendario" titulo="La preselección no está abierta"
+                        mensaje="Cuando la dirección del programa abra la preselección de un horario, podrás elegir tus grupos aquí." />
+    </div>
+  } @else {
+    <div class="tarjeta barra-estado">
+      @if (horarios().length > 1) {
+        <div class="campo selector-horario">
+          <label for="horario">Horario</label>
+          <select id="horario" (change)="seleccionarHorario(+$any($event.target).value)">
+            @for (opcion of horarios(); track opcion.id) {
+              <option [value]="opcion.id" [selected]="opcion.id === horarioId()">{{ opcion.semestre }}{{ opcion.preseleccionAbierta ? '' : ' · cerrada' }}</option>
+            }
+          </select>
+        </div>
+      } @else {
+        <div><span class="etiqueta">Horario</span><strong>Semestre {{ horario()?.semestre }}</strong></div>
+      }
+      <div class="estado-confirmacion" [class.confirmada]="confirmados().length > 0">
+        <app-icono [nombre]="confirmados().length ? 'check' : 'info'" [tamano]="18" />
+        @if (soloLectura()) {
+          Preselección cerrada · tu combinación confirmada tiene {{ confirmados().length }} {{ confirmados().length === 1 ? 'grupo' : 'grupos' }}.
+        } @else if (confirmados().length) {
+          Tienes una preselección confirmada con {{ confirmados().length }} {{ confirmados().length === 1 ? 'grupo' : 'grupos' }}.
+        } @else {
+          Aún no has confirmado una preselección para este horario.
+        }
+      </div>
+    </div>
+
+    @if (soloLectura() && !cargandoGrupos()) {
+      <div class="alerta solo-lectura" role="status">
+        <app-icono nombre="info" [tamano]="18" />
+        <span>La dirección del programa cerró la preselección de este horario. Esta es la combinación que confirmaste; puedes consultarla, pero ya no cambiarla. Las horas y aulas mostradas son las vigentes del horario.</span>
+      </div>
+    }
+
+    @if (cargandoGrupos()) {
+      <div class="tarjeta"><app-spinner texto="Cargando grupos" /></div>
+    } @else if (asignaturas().length === 0) {
+      <div class="tarjeta"><app-estado-vacio icono="libro" titulo="Sin grupos" mensaje="Este horario todavía no tiene grupos para elegir." /></div>
+    } @else {
+      <div class="distribucion">
+        <div class="asignaturas">
+          @for (asignatura of asignaturas(); track asignatura.asignaturaId) {
+            <fieldset class="tarjeta asignatura">
+              <legend><span class="codigo">{{ asignatura.codigo }}</span> {{ asignatura.nombre }}</legend>
+              @if (soloLectura()) {
+                @for (grupo of asignatura.grupos; track grupo.grupoId) {
+                  <div class="opcion activa fija">
+                    <app-icono nombre="check" [tamano]="16" />
+                    <span class="detalle-grupo">
+                      <strong>Grupo {{ grupo.numero }}</strong>
+                      <span>{{ grupo.nombreDocente ?? 'Docente por asignar' }}</span>
+                      <span class="sesiones">
+                        @for (sesion of grupo.sesiones; track sesion.id) {
+                          <span class="sesion">{{ etiquetaDia(sesion.dia) }} {{ horaCorta(sesion.horaInicio) }}–{{ horaCorta(sesion.horaFin) }} · {{ sesion.codigoAula }}</span>
+                        }
+                      </span>
+                    </span>
+                  </div>
+                }
+              } @else {
+              <label class="opcion" [class.activa]="elegido(asignatura) === null">
+                <input type="radio" [name]="'asignatura-' + asignatura.asignaturaId" [checked]="elegido(asignatura) === null"
+                       (change)="elegir(asignatura, null)" />
+                <span class="texto-suave">No la voy a cursar</span>
+              </label>
+              @for (grupo of asignatura.grupos; track grupo.grupoId) {
+                <label class="opcion" [class.activa]="elegido(asignatura) === grupo.grupoId"
+                       [class.choca]="elegido(asignatura) === grupo.grupoId && gruposEnChoque().has(grupo.grupoId)">
+                  <input type="radio" [name]="'asignatura-' + asignatura.asignaturaId" [checked]="elegido(asignatura) === grupo.grupoId"
+                         (change)="elegir(asignatura, grupo.grupoId)" />
+                  <span class="detalle-grupo">
+                    <strong>Grupo {{ grupo.numero }}</strong>
+                    <span>{{ grupo.nombreDocente ?? 'Docente por asignar' }}</span>
+                    <span class="sesiones">
+                      @for (sesion of grupo.sesiones; track sesion.id) {
+                        <span class="sesion">{{ etiquetaDia(sesion.dia) }} {{ horaCorta(sesion.horaInicio) }}–{{ horaCorta(sesion.horaFin) }} · {{ sesion.codigoAula }}</span>
+                      }
+                    </span>
+                  </span>
+                </label>
+              }
+              }
+            </fieldset>
+          }
+        </div>
+
+        <aside class="tarjeta resumen">
+          <h3>{{ soloLectura() ? 'Tu horario preseleccionado' : 'Tu borrador' }}</h3>
+          <p class="texto-suave">{{ gruposElegidos().length }} {{ gruposElegidos().length === 1 ? 'grupo elegido' : 'grupos elegidos' }}</p>
+
+          <div class="semana" [style.--alto-vista.px]="altoVista">
+            <div class="horas">
+              @for (hora of horasVista; track hora) { <span>{{ hora }}:00</span> }
+            </div>
+            @for (dia of dias; track dia.valor) {
+              <div class="dia">
+                <span class="nombre-dia">{{ dia.corta }}</span>
+                <div class="columna">
+                  @for (bloque of bloques(dia.valor); track bloque.sesion.id) {
+                    <span class="bloque" [class.choca]="bloque.choca" [style.top.px]="bloque.arriba" [style.height.px]="bloque.alto"
+                          [title]="bloque.sesion.codigoAsignatura + ' G' + bloque.sesion.numeroGrupo + ' · ' + horaCorta(bloque.sesion.horaInicio) + '–' + horaCorta(bloque.sesion.horaFin)">
+                      {{ bloque.sesion.codigoAsignatura }}
+                    </span>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+
+          @if (revisando()) {
+            <p class="texto-suave revisando"><app-spinner class="en-linea" /> Revisando choques…</p>
+          } @else if (choques().length) {
+            <div class="alerta alerta-error">
+              <strong>Tu combinación tiene {{ choques().length }} {{ choques().length === 1 ? 'choque' : 'choques' }}</strong>
+              <ul class="lista-incidencias">
+                @for (choque of choques(); track $index) { <li>{{ choque.mensaje }}</li> }
+              </ul>
+            </div>
+          } @else if (gruposElegidos().length > 1) {
+            <p class="sin-choques"><app-icono nombre="check" [tamano]="16" /> Sin choques entre los grupos elegidos</p>
+          }
+
+          @if (errorConfirmacion() && !choques().length) {
+            <div class="alerta alerta-error">{{ errorConfirmacion() }}</div>
+          }
+
+          <div class="acciones-resumen exportar">
+            <button type="button" class="btn btn-secundario" (click)="exportar()" [disabled]="confirmados().length === 0 || exportando()"
+                    [title]="confirmados().length === 0 ? 'Confirma tu preselección para poder exportarla'
+                      : hayCambios() ? 'Exporta la preselección confirmada, sin los cambios que no has guardado' : ''">
+              @if (exportando()) { <app-spinner class="en-linea" /> } @else { <app-icono nombre="descargar" [tamano]="16" /> } Exportar CSV
+            </button>
+          </div>
+
+          @if (!soloLectura()) {
+          <div class="acciones-resumen">
+            <button type="button" class="btn btn-secundario" (click)="descartar()" [disabled]="!hayCambios() || guardando()">Descartar cambios</button>
+            <button type="button" class="btn btn-primario" (click)="confirmar()" [disabled]="!puedeConfirmar()"
+                    [title]="choques().length ? 'Resuelve los choques para poder confirmar' : ''">
+              @if (guardando()) { <app-spinner class="en-linea" /> } Confirmar preselección
+            </button>
+          </div>
+          }
+        </aside>
+      </div>
+    }
+  }
+</section>

@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "frontend",
+      "runtimeExecutable": "C:\\Program Files\\nodejs\\node.exe",
+      "runtimeArgs": ["C:\\Users\\Usuario\\Documents\\GitHub\\Gestion-de-horarios\\Frontend\\node_modules\\@angular\\cli\\bin\\ng.js", "serve", "--port", "4200"],
+      "cwd": "Frontend",
+      "port": 4200
+    }
+  ]
+}

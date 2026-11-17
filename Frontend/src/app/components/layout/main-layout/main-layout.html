@@ -1,0 +1,12 @@
+<div class="marco">
+  <app-sidebar class="lateral" [abierta]="menuAbierto()" (cerrar)="menuAbierto.set(false)" />
+  @if (menuAbierto()) {
+    <div class="velo" (click)="menuAbierto.set(false)"></div>
+  }
+  <div class="area">
+    <app-topbar (abrirMenu)="menuAbierto.set(true)" />
+    <main class="contenido">
+      <router-outlet />
+    </main>
+  </div>
+</div>

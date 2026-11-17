@@ -1,0 +1,225 @@
+<section class="pagina">
+  <a class="volver" routerLink="/horarios"><app-icono nombre="izquierda" [tamano]="16" /> Volver a horarios</a>
+
+  @if (cargando()) {
+    <div class="tarjeta"><app-spinner texto="Cargando horario" /></div>
+  } @else if (noEncontrado() || !horario()) {
+    <div class="tarjeta">
+      <app-estado-vacio icono="calendario" titulo="No se pudo cargar el horario" mensaje="Es posible que haya sido eliminado.">
+        <a class="btn btn-secundario" routerLink="/horarios">Ir a la lista</a>
+      </app-estado-vacio>
+    </div>
+  } @else {
+    <div class="tarjeta portada">
+      <div class="identidad">
+        <span class="sello" [class.aprobado]="aprobado()">
+          <app-icono [nombre]="aprobado() ? 'candado' : 'calendario'" [tamano]="22" />
+        </span>
+        <div>
+          <div class="fila-titulo">
+            <h2>Semestre {{ horario()!.semestre }}</h2>
+            <span class="pildora" [class.pildora-verde]="aprobado()" [class.pildora-tan]="!aprobado()">{{ aprobado() ? 'Aprobado' : 'Borrador' }}</span>
+            @if (preseleccionAbierta()) { <span class="pildora pildora-petroleo">Preselección abierta</span> }
+          </div>
+          <p>{{ grupos().length }} grupos · {{ resumen().ubicadas }} de {{ resumen().total }} sesiones ubicadas</p>
+          <div class="progreso" role="progressbar" [attr.aria-valuenow]="resumen().porcentaje" aria-valuemin="0" aria-valuemax="100">
+            <span [style.width.%]="resumen().porcentaje"></span>
+          </div>
+        </div>
+      </div>
+      <div class="acciones-portada">
+        <button type="button" class="btn btn-claro" (click)="exportar()" [disabled]="exportando()">
+          @if (exportando()) { <app-spinner class="en-linea" /> } @else { <app-icono nombre="descargar" [tamano]="16" /> } Exportar CSV
+        </button>
+        <button type="button" class="btn btn-claro" (click)="validar()" [disabled]="validando()">
+          <app-icono nombre="check" [tamano]="16" /> Validar
+        </button>
+        @if (auth.esAdministrador()) {
+          <button type="button" class="btn btn-claro" (click)="alternarPreseleccion()"
+                  [disabled]="cambiandoPreseleccion() || (!preseleccionAbierta() && resumen().sinUbicar > 0)"
+                  [title]="!preseleccionAbierta() && resumen().sinUbicar > 0 ? 'Ubica todas las sesiones antes de abrir la preselección' : ''">
+            @if (cambiandoPreseleccion()) { <app-spinner class="en-linea" /> } @else { <app-icono nombre="personas" [tamano]="16" /> }
+            {{ preseleccionAbierta() ? 'Cerrar preselección' : 'Abrir preselección' }}
+          </button>
+          @if (aprobado()) {
+            <button type="button" class="btn btn-claro" (click)="devolverABorrador()" [disabled]="cambiandoEstado()">
+              <app-icono nombre="recargar" [tamano]="16" /> Devolver a borrador
+            </button>
+          } @else {
+            <button type="button" class="btn btn-claro" (click)="generar()" [disabled]="generando() || grupos().length === 0"
+                    [title]="grupos().length === 0 ? 'Registra grupos antes de generar' : 'Ubicar automáticamente las sesiones pendientes'">
+              @if (generando()) { <app-spinner class="en-linea" /> } @else { <app-icono nombre="varita" [tamano]="16" /> } Generar propuesta
+            </button>
+            <button type="button" class="btn btn-acento" (click)="aprobar()" [disabled]="cambiandoEstado()">
+              @if (cambiandoEstado()) { <app-spinner class="en-linea" /> } @else { <app-icono nombre="candado" [tamano]="16" /> } Aprobar
+            </button>
+          }
+        }
+      </div>
+    </div>
+
+    @if (aprobado() && auth.esAdministrador()) {
+      <div class="alerta alerta-advertencia">Este horario está aprobado: grupos y sesiones están bloqueados. Devuélvelo a borrador para hacer cambios.</div>
+    }
+
+    <div class="tarjeta">
+      <div class="pestanas" role="tablist">
+        <button type="button" role="tab" [attr.aria-selected]="pestana() === 'cuadricula'" [class.activa]="pestana() === 'cuadricula'" (click)="pestana.set('cuadricula')">
+          <app-icono nombre="calendario" [tamano]="16" /> Cuadrícula semanal
+        </button>
+        <button type="button" role="tab" [attr.aria-selected]="pestana() === 'grupos'" [class.activa]="pestana() === 'grupos'" (click)="pestana.set('grupos')">
+          <app-icono nombre="personas" [tamano]="16" /> Grupos <span class="contador">{{ grupos().length }}</span>
+        </button>
+        <button type="button" role="tab" [attr.aria-selected]="pestana() === 'validacion'" [class.activa]="pestana() === 'validacion'" (click)="validar()">
+          <app-icono nombre="alerta" [tamano]="16" /> Validación
+          @if (incidencias() !== null) { <span class="contador" [class.con-errores]="errores().length">{{ incidencias()!.length }}</span> }
+        </button>
+        @if (auth.esAdministrador()) {
+          <button type="button" role="tab" [attr.aria-selected]="pestana() === 'demanda'" [class.activa]="pestana() === 'demanda'" (click)="verDemanda()">
+            <app-icono nombre="usuario" [tamano]="16" /> Demanda
+            @if (demanda() !== null) { <span class="contador">{{ totalPreseleccionados() }}</span> }
+          </button>
+        }
+      </div>
+
+      @switch (pestana()) {
+        @case ('cuadricula') {
+          <div class="panel">
+            @if (resumen().total === 0) {
+              <app-estado-vacio icono="calendario" titulo="Todavía no hay sesiones" mensaje="Crea grupos en la pestaña Grupos; cada grupo genera sus sesiones semanales.">
+                <button type="button" class="btn btn-secundario" (click)="pestana.set('grupos')">Ir a grupos</button>
+              </app-estado-vacio>
+            } @else {
+              <app-cuadricula-horario [cuadricula]="cuadricula()!" [aulas]="aulas()" [parametros]="parametros()" [editable]="editable()" (cambio)="recargar()" />
+            }
+          </div>
+        }
+        @case ('grupos') {
+          <app-grupos-horario [horarioId]="horarioId()" [grupos]="grupos()" [sesiones]="sesiones()" [asignaturas]="asignaturas()"
+                              [docentes]="docentes()" [parametros]="parametros()" [editable]="editable()" (cambio)="recargar()" />
+        }
+        @case ('demanda') {
+          <div class="panel">
+            @if (cargandoDemanda() && demanda() === null) {
+              <app-spinner texto="Consultando la demanda" />
+            } @else if (!demanda()?.length) {
+              <app-estado-vacio icono="personas" titulo="Sin grupos" mensaje="Este horario todavía no tiene grupos registrados." />
+            } @else {
+              <p class="texto-suave nota-demanda">
+                Preselecciones confirmadas por los estudiantes frente al cupo de cada grupo. Solo informan la demanda:
+                no descuentan cupo ni impiden mover sesiones o aprobar el horario.
+                @if (!preseleccionAbierta()) { <strong>La preselección está cerrada.</strong> }
+              </p>
+              <table class="tabla">
+                <thead>
+                  <tr><th>Asignatura</th><th>Grupo</th><th>Preseleccionados</th><th class="col-barra">Frente al cupo</th></tr>
+                </thead>
+                <tbody>
+                  @for (grupo of demanda(); track grupo.grupoId) {
+                    <tr>
+                      <td><span class="codigo">{{ grupo.codigoAsignatura }}</span> {{ grupo.nombreAsignatura }}</td>
+                      <td>G{{ grupo.numero }}</td>
+                      <td><strong>{{ grupo.preseleccionados }}</strong> de {{ grupo.cupo }}</td>
+                      <td class="col-barra">
+                        <div class="barra-demanda" [class.excedida]="grupo.preseleccionados > grupo.cupo"
+                             role="progressbar" [attr.aria-valuenow]="grupo.preseleccionados" aria-valuemin="0" [attr.aria-valuemax]="grupo.cupo">
+                          <span [style.width.%]="porcentajeDemanda(grupo)"></span>
+                        </div>
+                        @if (grupo.preseleccionados > grupo.cupo) { <span class="texto-suave">Supera el cupo</span> }
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            }
+          </div>
+        }
+        @case ('validacion') {
+          <div class="panel">
+            @if (validando() && incidencias() === null) {
+              <app-spinner texto="Validando el horario" />
+            } @else if (incidencias()?.length === 0) {
+              <app-estado-vacio icono="check" titulo="Sin incidencias" mensaje="El horario cumple todas las reglas de validación." />
+            } @else {
+              <div class="resumen-validacion">
+                <span class="pildora pildora-error">{{ errores().length }} errores</span>
+                <span class="pildora pildora-advertencia">{{ advertencias().length }} advertencias</span>
+                @if (validando()) { <app-spinner class="en-linea" style="filter: invert(0.6)" /> }
+              </div>
+              <ul class="incidencias">
+                @for (incidencia of incidencias(); track $index) {
+                  <li [class.error]="incidencia.severidad === 'ERROR'">
+                    <app-icono [nombre]="incidencia.severidad === 'ERROR' ? 'alerta' : 'info'" [tamano]="18" />
+                    <div>
+                      <div class="cabecera-incidencia">
+                        <span class="codigo">{{ incidencia.codigo }}</span>
+                        <strong>{{ descripcion[incidencia.codigo] ?? incidencia.codigo }}</strong>
+                        <span class="pildora" [class.pildora-error]="incidencia.severidad === 'ERROR'" [class.pildora-advertencia]="incidencia.severidad !== 'ERROR'">
+                          {{ incidencia.severidad === 'ERROR' ? 'Error' : 'Advertencia' }}
+                        </span>
+                      </div>
+                      <p>{{ incidencia.mensaje }}</p>
+                    </div>
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+        }
+      }
+    </div>
+  }
+</section>
+
+@if (resultadoGeneracion(); as resultado) {
+  <app-modal titulo="Propuesta generada" subtitulo="Resultado del generador automático." [ancho]="620" (cerrar)="resultadoGeneracion.set(null)">
+    <div class="totales">
+      <div class="total exito"><strong>{{ resultado.totalUbicadas }}</strong><span>sesiones ubicadas</span></div>
+      <div class="total" [class.pendiente]="resultado.totalSinUbicar"><strong>{{ resultado.totalSinUbicar }}</strong><span>sin ubicar</span></div>
+      <div class="total"><strong>{{ resultado.advertencias.length }}</strong><span>advertencias</span></div>
+    </div>
+    @if (resultado.sesionesSinUbicar.length) {
+      <h4 class="subtitulo-modal">Sesiones que no se pudieron ubicar</h4>
+      <ul class="lista-modal">
+        @for (item of resultado.sesionesSinUbicar; track item.sesion.id) {
+          <li>
+            <strong>{{ item.sesion.codigoAsignatura }} · G{{ item.sesion.numeroGrupo }}</strong>
+            @if (item.codigoCausa) { <span class="codigo">{{ item.codigoCausa }}</span> }
+            <span>{{ item.causa }}</span>
+          </li>
+        }
+      </ul>
+    }
+    @if (resultado.advertencias.length) {
+      <h4 class="subtitulo-modal">Advertencias</h4>
+      <ul class="lista-modal">
+        @for (advertencia of resultado.advertencias; track $index) {
+          <li><span class="codigo">{{ advertencia.codigo }}</span> <span>{{ advertencia.mensaje }}</span></li>
+        }
+      </ul>
+    }
+    <div class="acciones-formulario" style="display: flex; margin-top: 16px">
+      <button type="button" class="btn btn-primario" (click)="resultadoGeneracion.set(null); pestana.set('cuadricula')">Ver cuadrícula</button>
+    </div>
+  </app-modal>
+}
+
+@if (rechazoAprobacion(); as rechazo) {
+  <app-modal titulo="No se puede aprobar" [subtitulo]="rechazo.mensaje" [ancho]="600" (cerrar)="rechazoAprobacion.set(null)">
+    <div class="totales">
+      <div class="total" [class.pendiente]="rechazo.sinUbicar"><strong>{{ rechazo.sinUbicar }}</strong><span>sesiones sin ubicar</span></div>
+      <div class="total" [class.pendiente]="rechazo.incidencias.length"><strong>{{ rechazo.incidencias.length }}</strong><span>errores pendientes</span></div>
+    </div>
+    @if (rechazo.incidencias.length) {
+      <ul class="lista-modal">
+        @for (incidencia of rechazo.incidencias; track $index) {
+          <li><span class="codigo">{{ incidencia.codigo }}</span> <span>{{ incidencia.mensaje }}</span></li>
+        }
+      </ul>
+    }
+    <div class="acciones-formulario" style="display: flex; margin-top: 16px">
+      <button type="button" class="btn btn-secundario" (click)="rechazoAprobacion.set(null)">Cerrar</button>
+      <button type="button" class="btn btn-primario" (click)="irAValidacionDesdeRechazo()">Ver validación</button>
+    </div>
+  </app-modal>
+}

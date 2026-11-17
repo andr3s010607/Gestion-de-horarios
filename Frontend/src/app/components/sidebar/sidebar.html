@@ -1,0 +1,30 @@
+<aside class="barra" [class.abierta]="abierta()">
+  <div class="logo">
+    <span class="logo-marca"><app-icono nombre="hoja" [tamano]="20" /></span>
+    <span class="logo-texto">Gestor de<br />horarios</span>
+    <button type="button" class="cerrar-movil" (click)="cerrar.emit()" aria-label="Cerrar menú">
+      <app-icono nombre="cerrar" [tamano]="18" />
+    </button>
+  </div>
+
+  <nav class="navegacion" aria-label="Navegación principal">
+    @for (grupo of grupos(); track grupo.titulo) {
+      <p class="titulo-grupo">{{ grupo.titulo }}</p>
+      <ul>
+        @for (elemento of grupo.elementos; track elemento.ruta) {
+          <li>
+            <a [routerLink]="elemento.ruta" routerLinkActive="activo" (click)="cerrar.emit()">
+              <app-icono [nombre]="elemento.icono" [tamano]="19" />
+              <span>{{ elemento.etiqueta }}</span>
+            </a>
+          </li>
+        }
+      </ul>
+    }
+  </nav>
+
+  <button type="button" class="salir" (click)="cerrarSesion()">
+    <app-icono nombre="salir" [tamano]="19" />
+    <span>Cerrar sesión</span>
+  </button>
+</aside>

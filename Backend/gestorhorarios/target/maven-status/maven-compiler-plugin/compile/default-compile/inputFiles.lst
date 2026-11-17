@@ -1,90 +1,111 @@
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\configuration\LoadDatabase.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\configuration\SwaggerConfig.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\controller\AsignaturaController.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\controller\AsignaturaRecursoRequeridoController.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\controller\AulaController.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\controller\AulaRecursoController.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\controller\AuthController.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\controller\DocenteAsignaturaController.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\controller\DocenteController.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\controller\GrupoController.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\controller\HorarioController.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\controller\ParametroSistemaController.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\controller\RecursoAulaController.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\controller\RestriccionHorariaDocenteController.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\controller\SemestreController.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\controller\SesionClaseController.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\controller\UsuarioController.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\AsignaturaDTO.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\AsignaturaRecursoRequeridoDTO.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\AulaDTO.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\AulaRecursoDTO.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\DocenteAsignaturaDTO.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\DocenteDTO.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\GrupoDTO.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\HorarioDTO.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\LoginDTO.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\ParametroSistemaDTO.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\RecursoAulaDTO.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\RespuestaAutenticacionDTO.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\RestriccionHorariaDocenteDTO.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\ResultadoGeneracionHorarioDTO.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\SemestreDTO.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\SesionClaseDTO.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\UsuarioDTO.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\entity\Asignatura.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\entity\AsignaturaRecursoRequerido.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\entity\Aula.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\entity\AulaRecurso.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\entity\Docente.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\entity\DocenteAsignatura.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\entity\Grupo.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\entity\Horario.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\entity\ParametroSistema.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\entity\RecursoAula.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\entity\RestriccionHorariaDocente.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\entity\Semestre.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\entity\SesionClase.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\entity\Usuario.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\enums\DiaSemana.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\enums\EstadoHorario.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\enums\RolUsuario.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\enums\TipoDatoParametro.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\enums\TipoRestriccionHorario.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\enums\TipoVinculacion.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\GestorhorariosApplication.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\repository\AsignaturaRecursoRequeridoRepository.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\repository\AsignaturaRepository.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\repository\AulaRecursoRepository.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\repository\AulaRepository.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\repository\DocenteAsignaturaRepository.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\repository\DocenteRepository.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\repository\GrupoRepository.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\repository\HorarioRepository.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\repository\ParametroSistemaRepository.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\repository\RecursoAulaRepository.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\repository\RestriccionHorariaDocenteRepository.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\repository\SemestreRepository.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\repository\SesionClaseRepository.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\repository\UsuarioRepository.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\security\JwtAuthenticationFilter.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\security\JwtUtil.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\security\SecurityConfig.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\security\UserDetailsServiceImpl.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\AsignaturaRecursoRequeridoService.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\AsignaturaService.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\AulaRecursoService.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\AulaService.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\CRUDOperation.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\DocenteAsignaturaService.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\DocenteService.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\GrupoService.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\HorarioService.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\ParametroSistemaService.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\RecursoAulaService.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\ReglaHorarioService.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\RestriccionHorariaDocenteService.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\SemestreService.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\SesionClaseService.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\UsuarioService.java
-D:\Semestre 4\Proyecto Nucleo\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\ServletInitializer.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\configuration\EsquemaBaseDatos.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\configuration\LoadDatabase.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\configuration\SwaggerConfig.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\controller\AsignaturaController.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\controller\AulaController.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\controller\AuthController.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\controller\DocenteAsignaturaController.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\controller\DocenteController.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\controller\GrupoController.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\controller\HorarioController.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\controller\ParametroSistemaController.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\controller\PreseleccionController.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\controller\RestriccionHorariaDocenteController.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\controller\SesionClaseController.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\controller\UsuarioController.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\AsignaturaDTO.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\AsignaturaPreseleccionDTO.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\AulaDTO.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\CuadriculaHorarioDTO.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\DemandaGrupoDTO.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\DocenteAsignaturaDTO.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\DocenteDTO.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\GrupoDTO.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\GrupoPreseleccionDTO.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\HorarioDTO.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\IncidenciaDTO.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\LoginDTO.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\MovimientoSesionDTO.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\ParametroSistemaDTO.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\PreseleccionDTO.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\RespuestaAutenticacionDTO.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\RestriccionHorariaDocenteDTO.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\ResultadoGeneracionHorarioDTO.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\ResultadoMovimientoDTO.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\SesionClaseDTO.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\SesionSinUbicarDTO.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\dto\UsuarioDTO.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\entity\Asignatura.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\entity\Aula.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\entity\ConvertidorSiNo.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\entity\Docente.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\entity\DocenteAsignatura.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\entity\DocenteAsignaturaId.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\entity\Grupo.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\entity\Horario.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\entity\OcupacionAula.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\entity\OcupacionDocente.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\entity\ParametroSistema.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\entity\Preseleccion.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\entity\PreseleccionId.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\entity\RestriccionHorariaDocente.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\entity\SesionClase.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\entity\Usuario.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\enums\DiaSemana.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\enums\EstadoHorario.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\enums\RolUsuario.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\enums\SeveridadIncidencia.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\enums\TipoAula.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\enums\TipoVinculacion.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\exception\AccesoDenegadoException.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\exception\CredencialesInvalidasException.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\exception\DatoDuplicadoException.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\exception\DatoInvalidoException.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\exception\DemasiadosIntentosException.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\exception\GlobalExceptionHandler.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\exception\IncidenciasHorarioException.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\exception\OperacionNoPermitidaException.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\exception\RecursoNoEncontradoException.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\GestorhorariosApplication.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\repository\AsignaturaRepository.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\repository\AulaRepository.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\repository\DocenteAsignaturaRepository.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\repository\DocenteRepository.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\repository\GrupoRepository.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\repository\HorarioRepository.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\repository\ParametroSistemaRepository.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\repository\PreseleccionRepository.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\repository\RestriccionHorariaDocenteRepository.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\repository\SesionClaseRepository.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\repository\UsuarioRepository.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\security\JwtAuthenticationFilter.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\security\JwtUtil.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\security\SecurityConfig.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\security\UserDetailsServiceImpl.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\AccesoDocenteService.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\AsignaturaService.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\AulaService.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\AutenticacionService.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\CRUDOperation.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\DocenteAsignaturaService.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\DocenteService.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\ExportacionService.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\GeneradorHorario.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\GrupoService.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\HorarioService.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\ParametroSistemaService.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\PreseleccionService.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\ProteccionHorarioAprobadoService.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\ReglaHorarioService.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\RestriccionHorariaDocenteService.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\SesionClaseService.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\UsuarioService.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\ValidacionService.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\Validador.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\ValidadorAula.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\ValidadorChoques.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\ValidadorConsecutividad.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\ValidadorCupo.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\ValidadorDocente.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\service\ValidadorFranja.java
+C:\Users\Usuario\Documents\GitHub\Gestion-de-horarios\Backend\gestorhorarios\src\main\java\co\edu\unbosque\gestorhorarios\ServletInitializer.java

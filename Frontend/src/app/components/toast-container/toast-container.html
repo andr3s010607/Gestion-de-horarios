@@ -1,0 +1,19 @@
+<div class="pila" aria-live="polite">
+  @for (mensaje of toast.mensajes(); track mensaje.id) {
+    <div class="toast" [class]="'toast ' + mensaje.tipo" role="alert">
+      <span class="marca"><app-icono [nombre]="iconoPorTipo[mensaje.tipo]" [tamano]="18" /></span>
+      <div class="contenido">
+        <strong>{{ mensaje.titulo }}</strong>
+        @if (mensaje.mensaje) { <p>{{ mensaje.mensaje }}</p> }
+        @if (mensaje.detalles?.length) {
+          <ul>
+            @for (detalle of mensaje.detalles; track $index) { <li>{{ detalle }}</li> }
+          </ul>
+        }
+      </div>
+      <button type="button" class="cerrar" (click)="toast.cerrar(mensaje.id)" aria-label="Cerrar notificación">
+        <app-icono nombre="cerrar" [tamano]="16" />
+      </button>
+    </div>
+  }
+</div>

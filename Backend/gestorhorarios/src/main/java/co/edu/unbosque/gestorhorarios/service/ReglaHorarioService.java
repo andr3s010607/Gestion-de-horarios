@@ -1,25 +1,27 @@
 package co.edu.unbosque.gestorhorarios.service;
 
-import java.math.BigDecimal;
-import java.time.LocalTime;
-
-import org.springframework.stereotype.Service;
-
 import co.edu.unbosque.gestorhorarios.entity.ParametroSistema;
+import co.edu.unbosque.gestorhorarios.enums.DiaSemana;
 import co.edu.unbosque.gestorhorarios.repository.ParametroSistemaRepository;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ReglaHorarioService {
 
-    public static final String CUPO_MAXIMO_GRUPO = "CUPO_MAXIMO_GRUPO";
-    public static final String TOLERANCIA_CUPO_PORCENTAJE = "TOLERANCIA_CUPO_PORCENTAJE";
     public static final String HORA_INICIO_LUNES_VIERNES = "HORA_INICIO_LUNES_VIERNES";
     public static final String HORA_FIN_LUNES_VIERNES = "HORA_FIN_LUNES_VIERNES";
-    public static final String HORA_INICIO_SABADO = "HORA_INICIO_SABADO";
     public static final String HORA_FIN_SABADO = "HORA_FIN_SABADO";
-    public static final String HORA_INICIO_ALMUERZO = "HORA_INICIO_ALMUERZO";
-    public static final String HORA_FIN_ALMUERZO = "HORA_FIN_ALMUERZO";
-    public static final String DURACION_SESION_MINUTOS = "DURACION_SESION_MINUTOS";
+    public static final String HORA_INICIO_PAUSA = "HORA_INICIO_PAUSA";
+    public static final String HORA_FIN_PAUSA = "HORA_FIN_PAUSA";
+    public static final String DURACION_SESION_HORAS = "DURACION_SESION_HORAS";
+    public static final String CUPO_MAXIMO = "CUPO_MAXIMO";
+    public static final String TOLERANCIA_CUPO_PORCENTAJE = "TOLERANCIA_CUPO_PORCENTAJE";
+
+    public static final int MINUTOS_POR_HORA = 60;
+    private static final int BASE_PORCENTAJE = 100;
 
     private final ParametroSistemaRepository parametroSistemaRepository;
 
@@ -27,33 +29,74 @@ public class ReglaHorarioService {
         this.parametroSistemaRepository = parametroSistemaRepository;
     }
 
-    public int cupoMaximoGrupo() { return entero(CUPO_MAXIMO_GRUPO, 40); }
-    public BigDecimal toleranciaCupoPorcentaje() { return decimal(TOLERANCIA_CUPO_PORCENTAJE, new BigDecimal("10")); }
-    public LocalTime horaInicioSemana() { return hora(HORA_INICIO_LUNES_VIERNES, LocalTime.of(7, 0)); }
-    public LocalTime horaFinSemana() { return hora(HORA_FIN_LUNES_VIERNES, LocalTime.of(22, 0)); }
-    public LocalTime horaInicioSabado() { return hora(HORA_INICIO_SABADO, LocalTime.of(7, 0)); }
-    public LocalTime horaFinSabado() { return hora(HORA_FIN_SABADO, LocalTime.of(13, 0)); }
-    public LocalTime horaInicioAlmuerzo() { return hora(HORA_INICIO_ALMUERZO, LocalTime.of(12, 0)); }
-    public LocalTime horaFinAlmuerzo() { return hora(HORA_FIN_ALMUERZO, LocalTime.of(13, 0)); }
-    public int duracionSesionMinutos() { return entero(DURACION_SESION_MINUTOS, 120); }
-
-    private int entero(String clave, int valorPorDefecto) {
-        try { return Integer.parseInt(valor(clave, String.valueOf(valorPorDefecto))); }
-        catch (NumberFormatException e) { return valorPorDefecto; }
+    public static Integer convertirAMinutos(LocalTime hora) {
+        return hora == null ? null : hora.getHour() * MINUTOS_POR_HORA + hora.getMinute();
     }
 
-    private BigDecimal decimal(String clave, BigDecimal valorPorDefecto) {
-        try { return new BigDecimal(valor(clave, valorPorDefecto.toPlainString())); }
-        catch (NumberFormatException e) { return valorPorDefecto; }
+    public static LocalTime convertirAHora(Integer minutos) {
+        return minutos == null ? null : LocalTime.of(minutos / MINUTOS_POR_HORA, minutos % MINUTOS_POR_HORA);
     }
 
-    private LocalTime hora(String clave, LocalTime valorPorDefecto) {
-        try { return LocalTime.parse(valor(clave, valorPorDefecto.toString())); }
-        catch (Exception e) { return valorPorDefecto; }
+    public static boolean seSolapan(int inicioUno, int finUno, int inicioDos, int finDos) {
+        return inicioUno < finDos && inicioDos < finUno;
     }
 
-    private String valor(String clave, String valorPorDefecto) {
-        return parametroSistemaRepository.findByClave(clave).filter(ParametroSistema::isActivo)
-                .map(ParametroSistema::getValor).orElse(valorPorDefecto);
+    public int minutoInicioFranja() {
+        return leerEntero(HORA_INICIO_LUNES_VIERNES);
+    }
+
+    public int minutoFinFranja(int dia) {
+        return dia == DiaSemana.SABADO.getNumero() ? leerEntero(HORA_FIN_SABADO) : leerEntero(HORA_FIN_LUNES_VIERNES);
+    }
+
+    public int minutoInicioPausa() {
+        return leerEntero(HORA_INICIO_PAUSA);
+    }
+
+    public int minutoFinPausa() {
+        return leerEntero(HORA_FIN_PAUSA);
+    }
+
+    public int duracionSesionHoras() {
+        return leerEntero(DURACION_SESION_HORAS);
+    }
+
+    public int duracionSesionMinutos() {
+        return duracionSesionHoras() * MINUTOS_POR_HORA;
+    }
+
+    public int cupoMaximo() {
+        return leerEntero(CUPO_MAXIMO);
+    }
+
+    public int toleranciaCupoPorcentaje() {
+        return leerEntero(TOLERANCIA_CUPO_PORCENTAJE);
+    }
+
+    public int cupoMaximoConTolerancia() {
+        return cupoMaximo() * (BASE_PORCENTAJE + toleranciaCupoPorcentaje()) / BASE_PORCENTAJE;
+    }
+
+    public List<Integer> minutosInicioValidos(int dia) {
+        return calcularIniciosValidos(minutoInicioFranja(), minutoFinFranja(dia), minutoInicioPausa(),
+                minutoFinPausa(), duracionSesionMinutos());
+    }
+
+    public static List<Integer> calcularIniciosValidos(int inicioFranja, int finFranja, int inicioPausa,
+            int finPausa, int duracion) {
+        List<Integer> inicios = new ArrayList<>();
+        for (int inicio = inicioFranja; inicio + duracion <= finFranja; inicio += MINUTOS_POR_HORA) {
+            if (!seSolapan(inicio, inicio + duracion, inicioPausa, finPausa)) {
+                inicios.add(inicio);
+            }
+        }
+        return inicios;
+    }
+
+    private int leerEntero(String clave) {
+        return parametroSistemaRepository.findById(clave)
+                .map(ParametroSistema::getValor)
+                .map(Integer::parseInt)
+                .orElseThrow(() -> new IllegalStateException("No existe el parámetro " + clave));
     }
 }

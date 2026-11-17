@@ -1,7 +1,10 @@
 package co.edu.unbosque.gestorhorarios.controller;
 
+import co.edu.unbosque.gestorhorarios.dto.RestriccionHorariaDocenteDTO;
+import co.edu.unbosque.gestorhorarios.service.AccesoDocenteService;
+import co.edu.unbosque.gestorhorarios.service.RestriccionHorariaDocenteService;
+import org.springframework.security.core.Authentication;
 import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,68 +16,66 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import co.edu.unbosque.gestorhorarios.dto.RestriccionHorariaDocenteDTO;
-import co.edu.unbosque.gestorhorarios.service.RestriccionHorariaDocenteService;
-
 @RestController
 @RequestMapping("/restricciones-horarias-docente")
 public class RestriccionHorariaDocenteController {
 
-    private final RestriccionHorariaDocenteService restriccionHorariaDocenteService;
+    private final RestriccionHorariaDocenteService restriccionService;
+    private final AccesoDocenteService accesoDocente;
 
-    public RestriccionHorariaDocenteController(RestriccionHorariaDocenteService restriccionHorariaDocenteService) {
-        this.restriccionHorariaDocenteService = restriccionHorariaDocenteService;
+    public RestriccionHorariaDocenteController(RestriccionHorariaDocenteService restriccionService,
+            AccesoDocenteService accesoDocente) {
+        this.restriccionService = restriccionService;
+        this.accesoDocente = accesoDocente;
     }
 
     @PostMapping
     public ResponseEntity<String> crear(@RequestBody RestriccionHorariaDocenteDTO dto) {
-        int status = restriccionHorariaDocenteService.create(dto);
-        if (status == 0) {
-            return new ResponseEntity<>("RestriccionHorariaDocente creado correctamente", HttpStatus.CREATED);
-        }
-        return new ResponseEntity<>("Error al crear RestriccionHorariaDocente", HttpStatus.BAD_REQUEST);
+        restriccionService.create(dto);
+        return new ResponseEntity<>("Restricción de horario creada correctamente", HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<RestriccionHorariaDocenteDTO>> obtenerTodos() {
-        return new ResponseEntity<>(restriccionHorariaDocenteService.getAll(), HttpStatus.OK);
+    public ResponseEntity<List<RestriccionHorariaDocenteDTO>> obtenerTodas(Authentication autenticacion) {
+        return ResponseEntity.ok(restriccionService.getAll().stream()
+                .filter(restriccion -> accesoDocente.puedeVerDetalle(autenticacion, restriccion.getDocenteId()))
+                .toList());
+    }
+
+    @GetMapping("/docente/{docenteId}")
+    public ResponseEntity<List<RestriccionHorariaDocenteDTO>> obtenerPorDocente(@PathVariable Long docenteId,
+            Authentication autenticacion) {
+        accesoDocente.exigirDetalle(autenticacion, docenteId);
+        return ResponseEntity.ok(restriccionService.getByDocenteId(docenteId));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RestriccionHorariaDocenteDTO> obtenerPorId(@PathVariable Long id) {
-        RestriccionHorariaDocenteDTO dto = restriccionHorariaDocenteService.getById(id);
-        if (dto != null) {
-            return new ResponseEntity<>(dto, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<RestriccionHorariaDocenteDTO> obtenerPorId(@PathVariable Long id,
+            Authentication autenticacion) {
+        RestriccionHorariaDocenteDTO restriccion = restriccionService.getById(id);
+        accesoDocente.exigirDetalle(autenticacion, restriccion.getDocenteId());
+        return ResponseEntity.ok(restriccion);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<String> actualizar(@PathVariable Long id, @RequestBody RestriccionHorariaDocenteDTO dto) {
-        int status = restriccionHorariaDocenteService.updateById(id, dto);
-        if (status == 0) {
-            return new ResponseEntity<>("RestriccionHorariaDocente actualizado correctamente", HttpStatus.OK);
-        }
-        return new ResponseEntity<>("Error al actualizar RestriccionHorariaDocente", HttpStatus.BAD_REQUEST);
+        restriccionService.updateById(id, dto);
+        return ResponseEntity.ok("Restricción de horario actualizada correctamente");
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> eliminar(@PathVariable Long id) {
-        int status = restriccionHorariaDocenteService.deleteById(id);
-        if (status == 0) {
-            return new ResponseEntity<>("RestriccionHorariaDocente eliminado correctamente", HttpStatus.OK);
-        }
-        return new ResponseEntity<>("RestriccionHorariaDocente no encontrado", HttpStatus.NOT_FOUND);
+        restriccionService.deleteById(id);
+        return ResponseEntity.ok("Restricción de horario eliminada correctamente");
     }
 
     @GetMapping("/count")
     public ResponseEntity<Long> contar() {
-        return new ResponseEntity<>(restriccionHorariaDocenteService.count(), HttpStatus.OK);
+        return ResponseEntity.ok(restriccionService.count());
     }
 
     @GetMapping("/exists/{id}")
     public ResponseEntity<Boolean> existe(@PathVariable Long id) {
-        return new ResponseEntity<>(restriccionHorariaDocenteService.exist(id), HttpStatus.OK);
+        return ResponseEntity.ok(restriccionService.exist(id));
     }
 }
-

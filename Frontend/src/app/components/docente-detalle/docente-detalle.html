@@ -1,0 +1,172 @@
+<section class="pagina">
+  <a class="volver" routerLink="/docentes"><app-icono nombre="izquierda" [tamano]="16" /> Volver a docentes</a>
+
+  @if (cargando()) {
+    <div class="tarjeta"><app-spinner texto="Cargando docente" /></div>
+  } @else if (noEncontrado() || !docente()) {
+    <div class="tarjeta">
+      <app-estado-vacio icono="personas" titulo="No se pudo cargar el docente" mensaje="Es posible que no exista o que no tengas permiso para verlo.">
+        <a class="btn btn-secundario" routerLink="/docentes">Ir a la lista</a>
+      </app-estado-vacio>
+    </div>
+  } @else {
+    <div class="tarjeta perfil">
+      <span class="avatar" aria-hidden="true">{{ docente()!.nombre.slice(0, 1) }}</span>
+      <div>
+        <h2>{{ docente()!.nombre }}</h2>
+        <div class="metadatos">
+          <span class="pildora pildora-tan">{{ vinculacion() }}</span>
+          <span class="texto-suave">{{ restricciones().length }} restricciones · {{ habilitadas().length }} asignaturas habilitadas</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="columnas">
+      <div class="tarjeta seccion">
+        <div class="titulo-seccion">
+          <div>
+            <h3>Restricciones horarias</h3>
+            <p>Franjas en las que el docente no puede dictar clase.</p>
+          </div>
+          @if (auth.esAdministrador()) {
+            <button type="button" class="btn btn-primario" (click)="abrirNuevaRestriccion()">
+              <app-icono nombre="mas" [tamano]="16" /> Agregar
+            </button>
+          }
+        </div>
+
+        <div class="semana" aria-hidden="true">
+          @for (dia of restriccionesPorDia(); track dia.valor) {
+            <div class="fila-dia">
+              <span class="dia">{{ dia.corta }}</span>
+              <div class="pista">
+                @for (bloque of dia.bloques; track bloque.id) {
+                  <span class="bloque" [style.left.%]="posicion(bloque).izquierda" [style.width.%]="posicion(bloque).ancho"
+                        [title]="horaCorta(bloque.horaInicio) + ' – ' + horaCorta(bloque.horaFin)"></span>
+                }
+              </div>
+            </div>
+          }
+          <div class="escala"><span>6:00</span><span>10:00</span><span>14:00</span><span>18:00</span><span>22:00</span></div>
+        </div>
+
+        @if (restricciones().length === 0) {
+          <app-estado-vacio icono="reloj" titulo="Sin restricciones" mensaje="El docente está disponible en toda la franja institucional." />
+        } @else {
+          <div class="tabla-contenedor">
+            <table class="tabla">
+              <thead>
+                <tr>
+                  <th>Día</th>
+                  <th>Desde</th>
+                  <th>Hasta</th>
+                  @if (auth.esAdministrador()) { <th><span class="oculto-visual">Acciones</span></th> }
+                </tr>
+              </thead>
+              <tbody>
+                @for (dia of restriccionesPorDia(); track dia.valor) {
+                  @for (restriccion of dia.bloques; track restriccion.id) {
+                    <tr>
+                      <td>{{ dia.etiqueta }}</td>
+                      <td>{{ horaCorta(restriccion.horaInicio) }}</td>
+                      <td>{{ horaCorta(restriccion.horaFin) }}</td>
+                      @if (auth.esAdministrador()) {
+                        <td>
+                          <div class="acciones">
+                            <button type="button" class="btn-icono" (click)="abrirEdicionRestriccion(restriccion)" aria-label="Editar restricción" title="Editar">
+                              <app-icono nombre="editar" [tamano]="16" />
+                            </button>
+                            <button type="button" class="btn-icono peligro" (click)="eliminarRestriccion(restriccion)" aria-label="Eliminar restricción" title="Eliminar">
+                              <app-icono nombre="eliminar" [tamano]="16" />
+                            </button>
+                          </div>
+                        </td>
+                      }
+                    </tr>
+                  }
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+
+      <div class="tarjeta seccion">
+        <div class="titulo-seccion">
+          <div>
+            <h3>Asignaturas habilitadas</h3>
+            <p>Solo puede asignarse a grupos de estas asignaturas.</p>
+          </div>
+        </div>
+
+        @if (auth.esAdministrador()) {
+          <div class="habilitar">
+            <label class="oculto-visual" for="asignatura">Asignatura a habilitar</label>
+            <select id="asignatura" class="filtro" [value]="asignaturaSeleccionada()" (change)="asignaturaSeleccionada.set($any($event.target).value)"
+                    [disabled]="disponibles().length === 0">
+              <option value="">{{ disponibles().length ? 'Selecciona una asignatura' : 'Ya tiene todas habilitadas' }}</option>
+              @for (asignatura of disponibles(); track asignatura.id) {
+                <option [value]="asignatura.id">{{ asignatura.codigo }} · {{ asignatura.nombre }}</option>
+              }
+            </select>
+            <button type="button" class="btn btn-primario" (click)="habilitar()" [disabled]="!asignaturaSeleccionada() || habilitando()">
+              @if (habilitando()) { <app-spinner class="en-linea" /> } Habilitar
+            </button>
+          </div>
+        }
+
+        @if (habilitadas().length === 0) {
+          <app-estado-vacio icono="libro" titulo="Sin asignaturas habilitadas" mensaje="Habilita al menos una asignatura para poder asignarle grupos." />
+        } @else {
+          <ul class="lista-asignaturas">
+            @for (asignatura of habilitadas(); track asignatura.id) {
+              <li>
+                <span class="codigo">{{ asignatura.codigo }}</span>
+                <span class="nombre">{{ asignatura.nombre }}</span>
+                <span class="pildora pildora-petroleo">{{ etiquetaTipo(asignatura.tipoAulaRequerido) }}</span>
+                @if (auth.esAdministrador()) {
+                  <button type="button" class="btn-icono peligro" (click)="retirar(asignatura)" [attr.aria-label]="'Retirar ' + asignatura.codigo" title="Retirar">
+                    <app-icono nombre="cerrar" [tamano]="16" />
+                  </button>
+                }
+              </li>
+            }
+          </ul>
+        }
+      </div>
+    </div>
+  }
+</section>
+
+@if (modalAbierto()) {
+  <app-modal [titulo]="editando() ? 'Editar restricción' : 'Nueva restricción'" subtitulo="La hora de fin debe ser posterior a la de inicio." (cerrar)="cerrarModal()">
+    <form class="formulario" [formGroup]="formulario" (ngSubmit)="guardarRestriccion()" novalidate>
+      <div class="campo completo" [class.invalido]="invalido('dia')">
+        <label for="dia">Día</label>
+        <select id="dia" formControlName="dia">
+          <option value="" disabled>Selecciona el día</option>
+          @for (dia of dias; track dia.valor) { <option [value]="dia.valor">{{ dia.etiqueta }}</option> }
+        </select>
+        @if (invalido('dia')) { <span class="error-campo">El día de la restricción es obligatorio</span> }
+      </div>
+      <div class="campo" [class.invalido]="invalido('horaInicio')">
+        <label for="inicio">Desde</label>
+        <input id="inicio" type="time" formControlName="horaInicio" />
+        @if (invalido('horaInicio')) { <span class="error-campo">La hora de inicio es obligatoria</span> }
+      </div>
+      <div class="campo" [class.invalido]="invalido('horaFin') || rangoInvalido()">
+        <label for="fin">Hasta</label>
+        <input id="fin" type="time" formControlName="horaFin" />
+        @if (invalido('horaFin')) { <span class="error-campo">La hora de fin es obligatoria</span> }
+        @else if (rangoInvalido()) { <span class="error-campo">La hora de fin debe ser posterior a la de inicio</span> }
+      </div>
+      <div class="acciones-formulario">
+        <button type="button" class="btn btn-secundario" (click)="cerrarModal()" [disabled]="guardando()">Cancelar</button>
+        <button type="submit" class="btn btn-primario" [disabled]="guardando()">
+          @if (guardando()) { <app-spinner class="en-linea" /> }
+          {{ editando() ? 'Guardar cambios' : 'Registrar restricción' }}
+        </button>
+      </div>
+    </form>
+  </app-modal>
+}

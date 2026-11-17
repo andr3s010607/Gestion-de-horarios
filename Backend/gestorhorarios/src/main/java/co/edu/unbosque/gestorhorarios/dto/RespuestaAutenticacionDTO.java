@@ -1,7 +1,5 @@
 package co.edu.unbosque.gestorhorarios.dto;
 
-import java.util.Objects;
-
 import co.edu.unbosque.gestorhorarios.enums.RolUsuario;
 
 public class RespuestaAutenticacionDTO {
@@ -9,18 +7,21 @@ public class RespuestaAutenticacionDTO {
     private String token;
     private String tipoToken;
     private Long id;
-    private String correo;
+    private String nombreUsuario;
     private RolUsuario rol;
+    private Long docenteId;
 
     public RespuestaAutenticacionDTO() {
     }
 
-    public RespuestaAutenticacionDTO(String token, String tipoToken, Long id, String correo, RolUsuario rol) {
+    public RespuestaAutenticacionDTO(String token, String tipoToken, Long id, String nombreUsuario, RolUsuario rol,
+            Long docenteId) {
         this.token = token;
         this.tipoToken = tipoToken;
         this.id = id;
-        this.correo = correo;
+        this.nombreUsuario = nombreUsuario;
         this.rol = rol;
+        this.docenteId = docenteId;
     }
 
     public String getToken() {
@@ -47,12 +48,12 @@ public class RespuestaAutenticacionDTO {
         this.id = id;
     }
 
-    public String getCorreo() {
-        return correo;
+    public String getNombreUsuario() {
+        return nombreUsuario;
     }
 
-    public void setCorreo(String correo) {
-        this.correo = correo;
+    public void setNombreUsuario(String nombreUsuario) {
+        this.nombreUsuario = nombreUsuario;
     }
 
     public RolUsuario getRol() {
@@ -63,28 +64,11 @@ public class RespuestaAutenticacionDTO {
         this.rol = rol;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(token, tipoToken, id, correo, rol);
+    public Long getDocenteId() {
+        return docenteId;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-        RespuestaAutenticacionDTO other = (RespuestaAutenticacionDTO) obj;
-        return Objects.equals(token, other.token) && Objects.equals(tipoToken, other.tipoToken)
-                && Objects.equals(id, other.id) && Objects.equals(correo, other.correo)
-                && rol == other.rol;
-    }
-
-    @Override
-    public String toString() {
-        return "RespuestaAutenticacionDTO [token=" + token + ", tipoToken=" + tipoToken + ", id=" + id
-                + ", correo=" + correo + ", rol=" + rol + "]";
+    public void setDocenteId(Long docenteId) {
+        this.docenteId = docenteId;
     }
 }

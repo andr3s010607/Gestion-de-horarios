@@ -1,0 +1,174 @@
+.volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  color: var(--texto-suave);
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.volver:hover {
+  color: var(--fig-leaf);
+}
+
+.perfil {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 22px 24px;
+  background: var(--moss-oscuro);
+  border-color: var(--moss-oscuro);
+  color: var(--texto-claro);
+}
+
+.perfil h2 {
+  font-size: 22px;
+}
+
+.perfil .avatar {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--azeitona);
+  color: var(--moss-oscuro);
+  font-size: 22px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.metadatos {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.perfil .texto-suave {
+  color: rgba(243, 238, 226, 0.7);
+  font-size: 14px;
+}
+
+.columnas {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.seccion {
+  overflow: hidden;
+}
+
+.titulo-seccion {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--borde);
+}
+
+.titulo-seccion h3 {
+  font-size: 17px;
+}
+
+.titulo-seccion p {
+  margin: 4px 0 0;
+  font-size: 13.5px;
+  color: var(--texto-suave);
+}
+
+.semana {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--borde);
+}
+
+.fila-dia {
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  align-items: center;
+  gap: 10px;
+}
+
+.dia {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--texto-suave);
+}
+
+.pista {
+  position: relative;
+  height: 14px;
+  border-radius: 999px;
+  background: var(--exito-fondo);
+}
+
+.bloque {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 999px;
+  background: repeating-linear-gradient(135deg, var(--cafe-noir) 0 4px, #6b5a32 4px 8px);
+}
+
+.escala {
+  display: flex;
+  justify-content: space-between;
+  margin-left: 46px;
+  font-size: 11px;
+  color: var(--texto-suave);
+}
+
+.habilitar {
+  display: flex;
+  gap: 10px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--borde);
+}
+
+.habilitar select {
+  flex: 1;
+  min-width: 0;
+}
+
+.lista-asignaturas {
+  list-style: none;
+  margin: 0;
+  padding: 8px 12px 12px;
+}
+
+.lista-asignaturas li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--borde);
+}
+
+.lista-asignaturas li:last-child {
+  border-bottom: none;
+}
+
+.lista-asignaturas .nombre {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 1100px) {
+  .columnas {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .habilitar {
+    flex-direction: column;
+  }
+}

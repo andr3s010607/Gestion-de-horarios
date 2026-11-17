@@ -1,278 +1,346 @@
 package co.edu.unbosque.gestorhorarios.service;
 
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import co.edu.unbosque.gestorhorarios.dto.CuadriculaHorarioDTO;
 import co.edu.unbosque.gestorhorarios.dto.HorarioDTO;
+import co.edu.unbosque.gestorhorarios.dto.IncidenciaDTO;
+import co.edu.unbosque.gestorhorarios.dto.MovimientoSesionDTO;
 import co.edu.unbosque.gestorhorarios.dto.ResultadoGeneracionHorarioDTO;
+import co.edu.unbosque.gestorhorarios.dto.ResultadoMovimientoDTO;
 import co.edu.unbosque.gestorhorarios.dto.SesionClaseDTO;
+import co.edu.unbosque.gestorhorarios.dto.SesionSinUbicarDTO;
 import co.edu.unbosque.gestorhorarios.entity.Aula;
-import co.edu.unbosque.gestorhorarios.entity.Grupo;
 import co.edu.unbosque.gestorhorarios.entity.Horario;
-import co.edu.unbosque.gestorhorarios.entity.Semestre;
 import co.edu.unbosque.gestorhorarios.entity.SesionClase;
 import co.edu.unbosque.gestorhorarios.enums.DiaSemana;
 import co.edu.unbosque.gestorhorarios.enums.EstadoHorario;
+import co.edu.unbosque.gestorhorarios.enums.SeveridadIncidencia;
+import co.edu.unbosque.gestorhorarios.exception.DatoDuplicadoException;
+import co.edu.unbosque.gestorhorarios.exception.DatoInvalidoException;
+import co.edu.unbosque.gestorhorarios.exception.IncidenciasHorarioException;
+import co.edu.unbosque.gestorhorarios.exception.OperacionNoPermitidaException;
+import co.edu.unbosque.gestorhorarios.exception.RecursoNoEncontradoException;
+import co.edu.unbosque.gestorhorarios.repository.AsignaturaRepository;
 import co.edu.unbosque.gestorhorarios.repository.AulaRepository;
+import co.edu.unbosque.gestorhorarios.repository.DocenteRepository;
 import co.edu.unbosque.gestorhorarios.repository.GrupoRepository;
 import co.edu.unbosque.gestorhorarios.repository.HorarioRepository;
-import co.edu.unbosque.gestorhorarios.repository.SemestreRepository;
 import co.edu.unbosque.gestorhorarios.repository.SesionClaseRepository;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.regex.Pattern;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class HorarioService implements CRUDOperation<HorarioDTO> {
 
+    private static final Pattern FORMATO_SEMESTRE = Pattern.compile("\\d{4}-[12]");
+    private static final String RESTRICCION_OCUPACION_DOCENTE = "uq_ocupacion_docente";
+
     private final HorarioRepository horarioRepository;
-    private final SemestreRepository semestreRepository;
     private final GrupoRepository grupoRepository;
-    private final AulaRepository aulaRepository;
     private final SesionClaseRepository sesionClaseRepository;
+    private final AsignaturaRepository asignaturaRepository;
+    private final DocenteRepository docenteRepository;
+    private final AulaRepository aulaRepository;
     private final SesionClaseService sesionClaseService;
+    private final ValidacionService validacionService;
+    private final GeneradorHorario generadorHorario;
     private final ReglaHorarioService reglaHorarioService;
 
-    public HorarioService(HorarioRepository horarioRepository, SemestreRepository semestreRepository,
-            GrupoRepository grupoRepository, AulaRepository aulaRepository,
-            SesionClaseRepository sesionClaseRepository, SesionClaseService sesionClaseService,
-            ReglaHorarioService reglaHorarioService) {
+    public HorarioService(HorarioRepository horarioRepository, GrupoRepository grupoRepository,
+            SesionClaseRepository sesionClaseRepository, AsignaturaRepository asignaturaRepository,
+            DocenteRepository docenteRepository, AulaRepository aulaRepository,
+            SesionClaseService sesionClaseService, ValidacionService validacionService,
+            GeneradorHorario generadorHorario, ReglaHorarioService reglaHorarioService) {
         this.horarioRepository = horarioRepository;
-        this.semestreRepository = semestreRepository;
         this.grupoRepository = grupoRepository;
-        this.aulaRepository = aulaRepository;
         this.sesionClaseRepository = sesionClaseRepository;
+        this.asignaturaRepository = asignaturaRepository;
+        this.docenteRepository = docenteRepository;
+        this.aulaRepository = aulaRepository;
         this.sesionClaseService = sesionClaseService;
+        this.validacionService = validacionService;
+        this.generadorHorario = generadorHorario;
         this.reglaHorarioService = reglaHorarioService;
     }
 
     @Override
     public int create(HorarioDTO dto) {
-        try {
-            if (dto == null) {
-                return 1;
-            }
-            Horario entity = convertirAEntidad(dto);
-            if (entity == null) {
-                return 1;
-            }
-            horarioRepository.save(entity);
-            return 0;
-        } catch (Exception e) {
-            return 1;
+        String semestre = validarSemestre(dto);
+        if (horarioRepository.existsBySemestre(semestre)) {
+            throw new DatoDuplicadoException("Ya existe un horario para el semestre " + semestre);
         }
+        Horario horario = new Horario();
+        horario.setSemestre(semestre);
+        horario.setEstado(EstadoHorario.BORRADOR);
+        horarioRepository.save(horario);
+        return 0;
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<HorarioDTO> getAll() {
-        return horarioRepository.findAll().stream().map(this::convertirADTO).toList();
+        return horarioRepository.findAll().stream()
+                .sorted(Comparator.comparing(Horario::getSemestre))
+                .map(this::convertirADTO)
+                .toList();
     }
 
+    @Transactional(readOnly = true)
     public HorarioDTO getById(Long id) {
-        return horarioRepository.findById(id).map(this::convertirADTO).orElse(null);
+        return convertirADTO(buscar(id));
     }
 
     @Override
     public int deleteById(Long id) {
-        if (!horarioRepository.existsById(id)) {
-            return 1;
-        }
-        horarioRepository.deleteById(id);
+        Horario horario = buscar(id);
+        exigirBorrador(horario);
+        grupoRepository.deleteAll(grupoRepository.findByHorarioId(id));
+        horarioRepository.delete(horario);
         return 0;
     }
 
     @Override
     public int updateById(Long id, HorarioDTO dto) {
-        try {
-            if (!horarioRepository.existsById(id) || dto == null) {
-                return 1;
-            }
-            Horario entity = convertirAEntidad(dto);
-            if (entity == null) {
-                return 1;
-            }
-            entity.setId(id);
-            horarioRepository.save(entity);
-            return 0;
-        } catch (Exception e) {
-            return 1;
+        Horario horario = buscar(id);
+        exigirBorrador(horario);
+        String semestre = validarSemestre(dto);
+        if (horarioRepository.existsBySemestreAndIdNot(semestre, id)) {
+            throw new DatoDuplicadoException("Ya existe un horario para el semestre " + semestre);
         }
+        horario.setSemestre(semestre);
+        horarioRepository.save(horario);
+        return 0;
     }
 
     @Override
+    @Transactional(readOnly = true)
     public long count() {
         return horarioRepository.count();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean exist(Long id) {
         return horarioRepository.existsById(id);
     }
 
     public ResultadoGeneracionHorarioDTO generarPropuesta(Long horarioId) {
-        Horario horario = horarioRepository.findById(horarioId).orElse(null);
-        if (horario == null) {
-            return new ResultadoGeneracionHorarioDTO(0, List.of("El horario indicado no existe"));
-        }
-
-        int creadas = 0;
-        List<String> mensajes = new ArrayList<>();
-        List<Grupo> grupos = gruposDelSemestre(horario.getSemestre().getId());
-        List<Aula> aulas = aulaRepository.findAll().stream().filter(Aula::isActiva)
-                .sorted(Comparator.comparing(Aula::getId)).toList();
-
-        for (Grupo grupo : grupos) {
-            int existentes = (int) sesionClaseRepository.findByHorarioId(horarioId).stream()
-                    .filter(sesion -> sesion.getGrupo().getId().equals(grupo.getId())).count();
-            int pendientes = grupo.getAsignatura().getSesionesSemanales() - existentes;
-            while (pendientes > 0) {
-                SesionClaseDTO propuesta = buscarEspacioDisponible(horario, grupo, aulas);
-                if (propuesta == null) {
-                    mensajes.add("No fue posible asignar todas las sesiones para el grupo " + grupo.getCodigo());
-                    break;
-                }
-                if (sesionClaseService.create(propuesta) == 0) {
-                    creadas++;
-                    pendientes--;
-                } else {
-                    mensajes.add("No fue posible guardar una sesión para el grupo " + grupo.getCodigo());
-                    break;
-                }
-            }
-        }
-        if (creadas > 0) {
-            horario.setEstado(EstadoHorario.GENERADO);
-            horarioRepository.save(horario);
-        }
-        mensajes.addAll(validarHorario(horarioId));
-        return new ResultadoGeneracionHorarioDTO(creadas, mensajes.stream().distinct().toList());
-    }
-
-    public List<String> validarHorario(Long horarioId) {
-        Horario horario = horarioRepository.findById(horarioId).orElse(null);
-        if (horario == null) {
-            return List.of("El horario indicado no existe");
-        }
-        List<String> errores = new ArrayList<>();
-        List<SesionClase> sesiones = sesionClaseRepository.findByHorarioId(horarioId);
-        for (Grupo grupo : gruposDelSemestre(horario.getSemestre().getId())) {
-            long cantidad = sesiones.stream().filter(sesion -> sesion.getGrupo().getId().equals(grupo.getId())).count();
-            if (cantidad != grupo.getAsignatura().getSesionesSemanales()) {
-                errores.add("El grupo " + grupo.getCodigo() + " requiere "
-                        + grupo.getAsignatura().getSesionesSemanales() + " sesiones y tiene " + cantidad);
-            }
-        }
+        Horario horario = buscar(horarioId);
+        exigirBorrador(horario);
+        exigirDatosMinimos(horario);
+        Map<SesionClase, IncidenciaDTO> causasSinUbicar = generadorHorario.ubicarSesionesPendientes(horario,
+                aulaRepository.findAllByOrderByCodigoAsc());
+        sesionClaseService.guardarUbicaciones();
+        List<SesionClase> sesiones = horario.getGrupos().stream()
+                .flatMap(grupo -> grupo.getSesiones().stream())
+                .toList();
+        List<SesionClaseDTO> ubicadas = sesionClaseService
+                .ordenarYConvertir(sesiones.stream().filter(SesionClase::estaUbicada).toList());
+        List<SesionSinUbicarDTO> sinUbicar = new ArrayList<>();
         for (SesionClase sesion : sesiones) {
-            SesionClaseDTO dto = new SesionClaseDTO(sesion.getId(), horarioId, sesion.getGrupo().getId(),
-                    sesion.getAula().getId(), sesion.getDia(), sesion.getHoraInicio(), sesion.getHoraFin());
-            errores.addAll(sesionClaseService.validarSesion(dto, sesion.getId()));
-        }
-        return errores.stream().distinct().toList();
-    }
-
-    public List<SesionClaseDTO> getSesiones(Long horarioId) {
-        return sesionClaseService.getByHorarioId(horarioId);
-    }
-
-    public List<SesionClaseDTO> getSesionesPorDocente(Long horarioId, Long docenteId) {
-        return sesionClaseService.getByHorarioYDocente(horarioId, docenteId);
-    }
-
-    public List<SesionClaseDTO> getSesionesPorAula(Long horarioId, Long aulaId) {
-        return sesionClaseService.getByHorarioYAula(horarioId, aulaId);
-    }
-
-    public List<SesionClaseDTO> getSesionesPorAsignatura(Long horarioId, Long asignaturaId) {
-        return sesionClaseService.getByHorarioYAsignatura(horarioId, asignaturaId);
-    }
-
-    public byte[] exportarCsv(Long horarioId) {
-        Horario horario = horarioRepository.findById(horarioId).orElse(null);
-        if (horario == null) {
-            return null;
-        }
-        StringBuilder csv = new StringBuilder("Horario,Día,Hora inicio,Hora fin,Grupo,Asignatura,Docente,Aula\n");
-        sesionClaseRepository.findByHorarioId(horarioId).stream()
-                .sorted(Comparator.comparing(SesionClase::getDia).thenComparing(SesionClase::getHoraInicio))
-                .forEach(sesion -> csv.append(escapar(horario.getNombre())).append(',')
-                        .append(sesion.getDia()).append(',').append(sesion.getHoraInicio()).append(',')
-                        .append(sesion.getHoraFin()).append(',').append(escapar(sesion.getGrupo().getCodigo())).append(',')
-                        .append(escapar(sesion.getGrupo().getAsignatura().getNombre())).append(',')
-                        .append(escapar(nombreDocente(sesion))).append(',')
-                        .append(escapar(sesion.getAula().getCodigo())).append('\n'));
-        return csv.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8);
-    }
-
-    private SesionClaseDTO buscarEspacioDisponible(Horario horario, Grupo grupo, List<Aula> aulas) {
-        for (DiaSemana dia : diasPreferidos(grupo.getAsignatura().getSesionesSemanales())) {
-            LocalTime inicio = dia == DiaSemana.SABADO ? reglaHorarioService.horaInicioSabado()
-                    : reglaHorarioService.horaInicioSemana();
-            LocalTime finJornada = dia == DiaSemana.SABADO ? reglaHorarioService.horaFinSabado()
-                    : reglaHorarioService.horaFinSemana();
-            while (!inicio.plusMinutes(reglaHorarioService.duracionSesionMinutos()).isAfter(finJornada)) {
-                LocalTime fin = inicio.plusMinutes(reglaHorarioService.duracionSesionMinutos());
-                for (Aula aula : aulas) {
-                    SesionClaseDTO candidata = new SesionClaseDTO(null, horario.getId(), grupo.getId(), aula.getId(), dia,
-                            inicio, fin);
-                    if (sesionClaseService.validarSesion(candidata, null).isEmpty()) {
-                        return candidata;
-                    }
-                }
-                inicio = fin;
+            if (!sesion.estaUbicada()) {
+                IncidenciaDTO causa = causasSinUbicar.get(sesion);
+                sinUbicar.add(new SesionSinUbicarDTO(sesionClaseService.convertirADTO(sesion), causa.getCodigo(),
+                        causa.getMensaje()));
             }
         }
-        return null;
+        List<IncidenciaDTO> advertencias = validacionService.filtrarAdvertencias(validacionService.validar(horario));
+        return new ResultadoGeneracionHorarioDTO(ubicadas, sinUbicar, advertencias);
     }
 
-    private List<DiaSemana> diasPreferidos(int sesionesSemanales) {
-        if (sesionesSemanales == 2) {
-            return List.of(DiaSemana.LUNES, DiaSemana.MIERCOLES, DiaSemana.VIERNES, DiaSemana.SABADO,
-                    DiaSemana.MARTES, DiaSemana.JUEVES);
+    @Transactional(readOnly = true)
+    public List<IncidenciaDTO> validarHorario(Long horarioId) {
+        return validacionService.validar(buscar(horarioId));
+    }
+
+    @Transactional(readOnly = true)
+    public CuadriculaHorarioDTO obtenerCuadricula(Long horarioId) {
+        Horario horario = buscar(horarioId);
+        return new CuadriculaHorarioDTO(convertirADTO(horario), Arrays.asList(DiaSemana.values()),
+                convertirAHoras(reglaHorarioService.minutosInicioValidos(DiaSemana.LUNES.getNumero())),
+                convertirAHoras(reglaHorarioService.minutosInicioValidos(DiaSemana.SABADO.getNumero())),
+                sesionClaseService.ordenarYConvertir(sesionClaseRepository.findByHorarioIdAndDiaIsNotNull(horarioId)),
+                sesionClaseService.ordenarYConvertir(sesionClaseRepository.findByHorarioIdAndDiaIsNull(horarioId)));
+    }
+
+    @Transactional(readOnly = true)
+    public List<SesionClaseDTO> getSesiones(Long horarioId) {
+        buscar(horarioId);
+        return sesionClaseService.ordenarYConvertir(sesionClaseRepository.findByHorarioId(horarioId));
+    }
+
+    @Transactional(readOnly = true)
+    public List<SesionClaseDTO> consultarHorarioCompleto(Long horarioId) {
+        buscar(horarioId);
+        return sesionClaseService.ordenarYConvertir(sesionClaseRepository.findByHorarioIdAndDiaIsNotNull(horarioId));
+    }
+
+    @Transactional(readOnly = true)
+    public List<SesionClaseDTO> consultarPorDocente(Long horarioId, Long docenteId) {
+        buscar(horarioId);
+        if (!docenteRepository.existsById(docenteId)) {
+            throw new RecursoNoEncontradoException("No existe el docente con id " + docenteId);
         }
-        if (sesionesSemanales == 3) {
-            return List.of(DiaSemana.LUNES, DiaSemana.MIERCOLES, DiaSemana.VIERNES, DiaSemana.SABADO,
-                    DiaSemana.MARTES, DiaSemana.JUEVES);
+        return sesionClaseService.ordenarYConvertir(
+                sesionClaseRepository.findByHorarioIdAndGrupoDocenteIdAndDiaIsNotNull(horarioId, docenteId));
+    }
+
+    @Transactional(readOnly = true)
+    public List<SesionClaseDTO> consultarPorAula(Long horarioId, Long aulaId) {
+        buscar(horarioId);
+        if (!aulaRepository.existsById(aulaId)) {
+            throw new RecursoNoEncontradoException("No existe el aula con id " + aulaId);
         }
-        return List.of(DiaSemana.LUNES, DiaSemana.MARTES, DiaSemana.MIERCOLES, DiaSemana.JUEVES,
-                DiaSemana.VIERNES, DiaSemana.SABADO);
+        return sesionClaseService.ordenarYConvertir(
+                sesionClaseRepository.findByHorarioIdAndAulaIdAndDiaIsNotNull(horarioId, aulaId));
     }
 
-    private List<Grupo> gruposDelSemestre(Long semestreId) {
-        return grupoRepository.findAll().stream().filter(Grupo::isActivo)
-                .filter(grupo -> grupo.getSemestre().getId().equals(semestreId)).toList();
-    }
-
-    private String nombreDocente(SesionClase sesion) {
-        if (sesion.getGrupo().getDocente() == null) {
-            return "";
+    @Transactional(readOnly = true)
+    public List<SesionClaseDTO> consultarPorAsignatura(Long horarioId, Long asignaturaId) {
+        buscar(horarioId);
+        if (!asignaturaRepository.existsById(asignaturaId)) {
+            throw new RecursoNoEncontradoException("No existe la asignatura con id " + asignaturaId);
         }
-        return sesion.getGrupo().getDocente().getNombres() + " " + sesion.getGrupo().getDocente().getApellidos();
+        return sesionClaseService.ordenarYConvertir(
+                sesionClaseRepository.findByHorarioIdAndGrupoAsignaturaIdAndDiaIsNotNull(horarioId, asignaturaId));
     }
 
-    private String escapar(String valor) {
-        return '"' + (valor == null ? "" : valor.replace("\"", "\"\"")) + '"';
-    }
-
-    private Horario convertirAEntidad(HorarioDTO dto) {
-        Horario entity = new Horario();
-        entity.setNombre(dto.getNombre());
-        entity.setEstado(dto.getEstado() == null ? EstadoHorario.BORRADOR : dto.getEstado());
-        if (dto.getFechaCreacion() != null) {
-            entity.setFechaCreacion(dto.getFechaCreacion());
+    public ResultadoMovimientoDTO moverSesion(Long sesionId, MovimientoSesionDTO movimiento) {
+        SesionClase sesion = sesionClaseService.buscar(sesionId);
+        Horario horario = sesion.getHorario();
+        exigirBorrador(horario);
+        if (movimiento == null || movimiento.getDia() == null || movimiento.getHoraInicio() == null
+                || movimiento.getAulaId() == null) {
+            throw new DatoInvalidoException("El día, la hora de inicio y el aula de destino son obligatorios");
         }
-        Semestre semestre = dto.getSemestreId() == null ? null : semestreRepository.findById(dto.getSemestreId()).orElse(null);
-        if (semestre == null) {
-            return null;
+        Aula aula = aulaRepository.findById(movimiento.getAulaId())
+                .orElseThrow(() -> new RecursoNoEncontradoException(
+                        "No existe el aula con id " + movimiento.getAulaId()));
+        int minutoInicio = ReglaHorarioService.convertirAMinutos(movimiento.getHoraInicio());
+        sesion.ubicar(movimiento.getDia().getNumero(), minutoInicio,
+                minutoInicio + reglaHorarioService.duracionSesionMinutos(), aula);
+        List<IncidenciaDTO> incidencias = validacionService.validarSesiones(horario, List.of(sesionId));
+        List<IncidenciaDTO> errores = validacionService.filtrarErrores(incidencias);
+        if (!errores.isEmpty()) {
+            throw new IncidenciasHorarioException(
+                    "El movimiento se rechazó y la sesión conserva su posición anterior", errores);
         }
-        entity.setSemestre(semestre);
-        return entity;
+        try {
+            sesionClaseService.guardarUbicaciones();
+        } catch (DataIntegrityViolationException excepcion) {
+            throw new IncidenciasHorarioException(
+                    "El movimiento se rechazó porque otra sesión ocupó la misma ubicación",
+                    List.of(construirChoquePorOcupacion(excepcion, sesionId)));
+        }
+        return new ResultadoMovimientoDTO(sesionClaseService.convertirADTO(sesion),
+                validacionService.filtrarAdvertencias(incidencias));
     }
 
-    private HorarioDTO convertirADTO(Horario entity) {
-        return new HorarioDTO(entity.getId(), entity.getNombre(), entity.getSemestre().getId(), entity.getEstado(),
-                entity.getFechaCreacion());
+    public SesionClaseDTO devolverSesionABandeja(Long sesionId) {
+        SesionClase sesion = sesionClaseService.buscar(sesionId);
+        exigirBorrador(sesion.getHorario());
+        sesion.desubicar();
+        sesionClaseService.guardarUbicaciones();
+        return sesionClaseService.convertirADTO(sesion);
+    }
+
+    public HorarioDTO aprobar(Long horarioId) {
+        Horario horario = buscar(horarioId);
+        if (horario.getEstado() == EstadoHorario.APROBADO) {
+            throw new OperacionNoPermitidaException("El horario " + horario.getSemestre() + " ya está aprobado");
+        }
+        List<IncidenciaDTO> errores = validacionService.filtrarErrores(validacionService.validar(horario));
+        int sinUbicar = (int) horario.getGrupos().stream()
+                .flatMap(grupo -> grupo.getSesiones().stream())
+                .filter(sesion -> !sesion.estaUbicada())
+                .count();
+        if (!errores.isEmpty() || sinUbicar > 0) {
+            throw new IncidenciasHorarioException("No se puede aprobar el horario " + horario.getSemestre()
+                    + ": tiene " + sinUbicar + " sesiones sin ubicar y " + errores.size()
+                    + " incidencias de severidad ERROR pendientes", errores, sinUbicar);
+        }
+        horario.setEstado(EstadoHorario.APROBADO);
+        horarioRepository.save(horario);
+        return convertirADTO(horario);
+    }
+
+    public HorarioDTO devolverABorrador(Long horarioId) {
+        Horario horario = buscar(horarioId);
+        horario.setEstado(EstadoHorario.BORRADOR);
+        horarioRepository.save(horario);
+        return convertirADTO(horario);
+    }
+
+    private Horario buscar(Long id) {
+        return horarioRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("No existe el horario con id " + id));
+    }
+
+    private String validarSemestre(HorarioDTO dto) {
+        if (dto == null || dto.getSemestre() == null || dto.getSemestre().isBlank()) {
+            throw new DatoInvalidoException("El semestre del horario es obligatorio");
+        }
+        String semestre = dto.getSemestre().trim();
+        if (!FORMATO_SEMESTRE.matcher(semestre).matches()) {
+            throw new DatoInvalidoException("El semestre debe tener el formato AAAA-1 o AAAA-2");
+        }
+        return semestre;
+    }
+
+    private void exigirBorrador(Horario horario) {
+        if (horario.getEstado() == EstadoHorario.APROBADO) {
+            throw new OperacionNoPermitidaException("El horario " + horario.getSemestre()
+                    + " está aprobado y no admite cambios hasta devolverlo a borrador");
+        }
+    }
+
+    private void exigirDatosMinimos(Horario horario) {
+        List<String> faltantes = new ArrayList<>();
+        if (asignaturaRepository.count() == 0) {
+            faltantes.add("asignaturas");
+        }
+        if (docenteRepository.count() == 0) {
+            faltantes.add("docentes");
+        }
+        if (aulaRepository.count() == 0) {
+            faltantes.add("aulas");
+        }
+        if (horario.getGrupos().isEmpty()) {
+            faltantes.add("grupos");
+        }
+        if (!faltantes.isEmpty()) {
+            throw new OperacionNoPermitidaException(
+                    "No se puede generar la propuesta porque faltan datos: " + String.join(", ", faltantes));
+        }
+    }
+
+    private IncidenciaDTO construirChoquePorOcupacion(DataIntegrityViolationException excepcion, Long sesionId) {
+        String detalle = String.valueOf(excepcion.getMostSpecificCause().getMessage()).toLowerCase(Locale.ROOT);
+        boolean choqueDeDocente = detalle.contains(RESTRICCION_OCUPACION_DOCENTE);
+        return new IncidenciaDTO(
+                choqueDeDocente ? ValidadorChoques.CHOQUE_DOCENTE : ValidadorChoques.CHOQUE_AULA,
+                SeveridadIncidencia.ERROR,
+                choqueDeDocente
+                        ? "El docente ya tiene otra sesión en ese día y hora"
+                        : "El aula ya tiene otra sesión en ese día y hora",
+                List.of(sesionId));
+    }
+
+    private List<LocalTime> convertirAHoras(List<Integer> minutos) {
+        return minutos.stream().map(ReglaHorarioService::convertirAHora).toList();
+    }
+
+    private HorarioDTO convertirADTO(Horario horario) {
+        return new HorarioDTO(horario.getId(), horario.getSemestre(), horario.getEstado(),
+                horario.isPreseleccionAbierta());
     }
 }

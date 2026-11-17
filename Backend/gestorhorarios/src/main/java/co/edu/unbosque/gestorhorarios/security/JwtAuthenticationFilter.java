@@ -1,7 +1,10 @@
 package co.edu.unbosque.gestorhorarios.security;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,13 +13,10 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+    private static final String PREFIJO_BEARER = "Bearer ";
 
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
@@ -30,28 +30,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
         String authorizationHeader = request.getHeader("Authorization");
-        String correo = null;
-        String jwt = null;
-
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            jwt = authorizationHeader.substring(7);
-            try {
-                correo = jwtUtil.extractUsername(jwt);
-            } catch (Exception e) {
-                logger.error("Error extrayendo correo del token", e);
-            }
+        if (authorizationHeader != null && authorizationHeader.startsWith(PREFIJO_BEARER)
+                && SecurityContextHolder.getContext().getAuthentication() == null) {
+            autenticarConToken(authorizationHeader.substring(PREFIJO_BEARER.length()), request);
         }
+        filterChain.doFilter(request, response);
+    }
 
-        if (correo != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(correo);
+    private void autenticarConToken(String jwt, HttpServletRequest request) {
+        try {
+            UserDetails userDetails = userDetailsService.loadUserByUsername(jwtUtil.extractUsername(jwt));
             if (jwtUtil.validateToken(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
+        } catch (RuntimeException excepcion) {
+            SecurityContextHolder.clearContext();
         }
-
-        filterChain.doFilter(request, response);
     }
 }

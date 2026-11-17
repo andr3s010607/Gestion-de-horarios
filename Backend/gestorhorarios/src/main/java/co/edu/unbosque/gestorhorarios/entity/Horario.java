@@ -1,53 +1,42 @@
 package co.edu.unbosque.gestorhorarios.entity;
 
-import java.util.Objects;
-
-import java.time.LocalDateTime;
-
 import co.edu.unbosque.gestorhorarios.enums.EstadoHorario;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 
-/** Propuesta de horario creada para un semestre. */
 @Entity
-@Table(name = "horarios")
+@Table(name = "horario")
 public class Horario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
-    private String nombre;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "semestre_id", nullable = false)
-    private Semestre semestre;
+    @Column(nullable = false, unique = true, length = 6)
+    private String semestre;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private EstadoHorario estado = EstadoHorario.BORRADOR;
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime fechaCreacion = LocalDateTime.now();
+    @Convert(converter = ConvertidorSiNo.class)
+    @Column(name = "preseleccion_abierta", nullable = false, columnDefinition = "CHAR(1) DEFAULT 'N'")
+    private Boolean preseleccionAbierta = false;
+
+    @OneToMany(mappedBy = "horario")
+    private List<Grupo> grupos = new ArrayList<>();
 
     public Horario() {
-    }
-
-    public Horario(String nombre, Semestre semestre, EstadoHorario estado, LocalDateTime fechaCreacion) {
-        this.nombre = nombre;
-        this.semestre = semestre;
-        this.estado = estado;
-        this.fechaCreacion = fechaCreacion;
     }
 
     public Long getId() {
@@ -58,19 +47,11 @@ public class Horario {
         this.id = id;
     }
 
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public Semestre getSemestre() {
+    public String getSemestre() {
         return semestre;
     }
 
-    public void setSemestre(Semestre semestre) {
+    public void setSemestre(String semestre) {
         this.semestre = semestre;
     }
 
@@ -82,36 +63,19 @@ public class Horario {
         this.estado = estado;
     }
 
-    public LocalDateTime getFechaCreacion() {
-        return fechaCreacion;
+    public boolean isPreseleccionAbierta() {
+        return Boolean.TRUE.equals(preseleccionAbierta);
     }
 
-    public void setFechaCreacion(LocalDateTime fechaCreacion) {
-        this.fechaCreacion = fechaCreacion;
-    }
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, nombre, semestre, estado, fechaCreacion);
+    public void setPreseleccionAbierta(boolean preseleccionAbierta) {
+        this.preseleccionAbierta = preseleccionAbierta;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Horario other = (Horario) obj;
-        return Objects.equals(id, other.id)
-                && Objects.equals(nombre, other.nombre)
-                && Objects.equals(semestre, other.semestre)
-                && Objects.equals(estado, other.estado)
-                && Objects.equals(fechaCreacion, other.fechaCreacion);
+    public List<Grupo> getGrupos() {
+        return grupos;
     }
 
-    @Override
-    public String toString() {
-        return "Horario [id=" + id + ", nombre=" + nombre + ", semestre=" + semestre + ", estado=" + estado + ", fechaCreacion=" + fechaCreacion + "]";
+    public void setGrupos(List<Grupo> grupos) {
+        this.grupos = grupos;
     }
 }

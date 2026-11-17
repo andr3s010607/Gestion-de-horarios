@@ -1,7 +1,6 @@
 package co.edu.unbosque.gestorhorarios.entity;
 
-import java.util.Objects;
-
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,51 +9,49 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.Min;
+import java.util.ArrayList;
+import java.util.List;
 
-/** Oferta de una asignatura para un semestre y docente determinados. */
 @Entity
 @Table(
-        name = "grupos",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"semestre_id", "codigo"}))
+        name = "grupo",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uq_grupo_numero",
+                columnNames = {"horario_id", "asignatura_id", "numero"}))
 public class Grupo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 20)
-    private String codigo;
-
+    @Min(1)
     @Column(nullable = false)
-    private Integer cupoPlaneado;
+    private Integer numero;
 
+    @Min(1)
     @Column(nullable = false)
-    private boolean activo = true;
+    private Integer cupo;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "asignatura_id", nullable = false)
     private Asignatura asignatura;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "semestre_id", nullable = false)
-    private Semestre semestre;
+    @JoinColumn(name = "horario_id", nullable = false)
+    private Horario horario;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "docente_id")
     private Docente docente;
 
-    public Grupo() {
-    }
+    @OneToMany(mappedBy = "grupo", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SesionClase> sesiones = new ArrayList<>();
 
-    public Grupo(String codigo, Integer cupoPlaneado, boolean activo, Asignatura asignatura, Semestre semestre, Docente docente) {
-        this.codigo = codigo;
-        this.cupoPlaneado = cupoPlaneado;
-        this.activo = activo;
-        this.asignatura = asignatura;
-        this.semestre = semestre;
-        this.docente = docente;
+    public Grupo() {
     }
 
     public Long getId() {
@@ -65,28 +62,20 @@ public class Grupo {
         this.id = id;
     }
 
-    public String getCodigo() {
-        return codigo;
+    public Integer getNumero() {
+        return numero;
     }
 
-    public void setCodigo(String codigo) {
-        this.codigo = codigo;
+    public void setNumero(Integer numero) {
+        this.numero = numero;
     }
 
-    public Integer getCupoPlaneado() {
-        return cupoPlaneado;
+    public Integer getCupo() {
+        return cupo;
     }
 
-    public void setCupoPlaneado(Integer cupoPlaneado) {
-        this.cupoPlaneado = cupoPlaneado;
-    }
-
-    public boolean isActivo() {
-        return activo;
-    }
-
-    public void setActivo(boolean activo) {
-        this.activo = activo;
+    public void setCupo(Integer cupo) {
+        this.cupo = cupo;
     }
 
     public Asignatura getAsignatura() {
@@ -97,12 +86,12 @@ public class Grupo {
         this.asignatura = asignatura;
     }
 
-    public Semestre getSemestre() {
-        return semestre;
+    public Horario getHorario() {
+        return horario;
     }
 
-    public void setSemestre(Semestre semestre) {
-        this.semestre = semestre;
+    public void setHorario(Horario horario) {
+        this.horario = horario;
     }
 
     public Docente getDocente() {
@@ -112,31 +101,12 @@ public class Grupo {
     public void setDocente(Docente docente) {
         this.docente = docente;
     }
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, codigo, cupoPlaneado, activo, asignatura, semestre, docente);
+
+    public List<SesionClase> getSesiones() {
+        return sesiones;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Grupo other = (Grupo) obj;
-        return Objects.equals(id, other.id)
-                && Objects.equals(codigo, other.codigo)
-                && Objects.equals(cupoPlaneado, other.cupoPlaneado)
-                && activo == other.activo
-                && Objects.equals(asignatura, other.asignatura)
-                && Objects.equals(semestre, other.semestre)
-                && Objects.equals(docente, other.docente);
-    }
-
-    @Override
-    public String toString() {
-        return "Grupo [id=" + id + ", codigo=" + codigo + ", cupoPlaneado=" + cupoPlaneado + ", activo=" + activo + ", asignatura=" + asignatura + ", semestre=" + semestre + ", docente=" + docente + "]";
+    public void setSesiones(List<SesionClase> sesiones) {
+        this.sesiones = sesiones;
     }
 }

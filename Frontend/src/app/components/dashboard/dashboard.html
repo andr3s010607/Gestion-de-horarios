@@ -1,0 +1,95 @@
+@if (cargando()) {
+  <app-spinner texto="Cargando el panel…" />
+} @else {
+  <section class="indicadores" aria-label="Resumen">
+    @for (indicador of indicadores(); track indicador.etiqueta) {
+      <a class="indicador tarjeta" [routerLink]="indicador.ruta">
+        <div class="indicador-cabecera">
+          <span>{{ indicador.etiqueta }}</span>
+          <span class="indicador-icono" [class]="'indicador-icono ' + indicador.tono">
+            <app-icono [nombre]="indicador.icono" [tamano]="20" />
+          </span>
+        </div>
+        <strong class="indicador-valor">{{ indicador.valor }}</strong>
+        <span class="indicador-detalle">{{ indicador.detalle }}</span>
+      </a>
+    }
+  </section>
+
+  <section class="columnas">
+    <article class="tarjeta bloque">
+      <header class="bloque-cabecera">
+        <div>
+          <h2>Horario más reciente</h2>
+          <p>Avance de ubicación de sesiones en la cuadrícula.</p>
+        </div>
+        @if (horarioReciente(); as horario) {
+          <span class="pildora" [class.pildora-verde]="horario.estado === 'APROBADO'" [class.pildora-tan]="horario.estado !== 'APROBADO'">
+            {{ horario.estado === 'APROBADO' ? 'Aprobado' : 'Borrador' }}
+          </span>
+        }
+      </header>
+
+      @if (horarioReciente(); as horario) {
+        <div class="semestre">
+          <span class="semestre-icono"><app-icono nombre="calendario" [tamano]="22" /></span>
+          <div>
+            <strong>Semestre {{ horario.semestre }}</strong>
+            @if (progreso(); as avance) {
+              <span>{{ avance.ubicadas }} de {{ avance.total }} sesiones ubicadas</span>
+            } @else {
+              <span>Calculando avance…</span>
+            }
+          </div>
+        </div>
+        @if (progreso(); as avance) {
+          <div class="barra-progreso" role="progressbar" [attr.aria-valuenow]="avance.porcentaje" aria-valuemin="0" aria-valuemax="100">
+            <span [style.width.%]="avance.porcentaje"></span>
+          </div>
+          <div class="leyenda">
+            <span><i class="punto verde"></i>{{ avance.ubicadas }} ubicadas</span>
+            <span><i class="punto tan"></i>{{ avance.sinUbicar }} sin ubicar</span>
+            <strong>{{ avance.porcentaje }}%</strong>
+          </div>
+        }
+        <a class="btn btn-primario" [routerLink]="['/horarios', horario.id]">
+          {{ auth.esAdministrador() ? 'Abrir horario' : 'Ver horario' }}
+          <app-icono nombre="derecha" [tamano]="16" />
+        </a>
+      } @else {
+        <app-estado-vacio icono="calendario" titulo="Aún no hay horarios"
+                          [mensaje]="auth.esAdministrador() ? 'Crea el horario del semestre para empezar a ubicar sesiones.' : 'El administrador todavía no ha creado horarios.'">
+          @if (auth.esAdministrador()) {
+            <a class="btn btn-primario" routerLink="/horarios">Ir a horarios</a>
+          }
+        </app-estado-vacio>
+      }
+    </article>
+
+    <article class="tarjeta bloque">
+      <header class="bloque-cabecera">
+        <div>
+          <h2>Horarios por semestre</h2>
+          <p>Estado de cada horario registrado.</p>
+        </div>
+      </header>
+      @if (horarios().length === 0) {
+        <app-estado-vacio icono="hoja" titulo="Sin horarios registrados" />
+      } @else {
+        <ul class="lista-horarios">
+          @for (horario of horarios(); track horario.id) {
+            <li>
+              <a [routerLink]="['/horarios', horario.id]">
+                <span class="lista-icono"><app-icono nombre="calendario" [tamano]="17" /></span>
+                <strong>{{ horario.semestre }}</strong>
+                <span class="pildora" [class.pildora-verde]="horario.estado === 'APROBADO'" [class.pildora-tan]="horario.estado !== 'APROBADO'">
+                  {{ horario.estado === 'APROBADO' ? 'Aprobado' : 'Borrador' }}
+                </span>
+              </a>
+            </li>
+          }
+        </ul>
+      }
+    </article>
+  </section>
+}

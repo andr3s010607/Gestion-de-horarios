@@ -1,14 +1,7 @@
 package co.edu.unbosque.gestorhorarios.entity;
 
-import java.util.Objects;
-
-import java.time.LocalTime;
-
-import co.edu.unbosque.gestorhorarios.enums.DiaSemana;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,10 +9,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
-/** Bloque semanal recurrente asignado a un grupo dentro de una propuesta de horario. */
 @Entity
-@Table(name = "sesiones_clase")
+@Table(name = "sesion")
 public class SesionClase {
 
     @Id
@@ -27,37 +23,59 @@ public class SesionClase {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "horario_id", nullable = false)
-    private Horario horario;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "grupo_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Grupo grupo;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "aula_id", nullable = false)
+    @JoinColumn(name = "horario_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Horario horario;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "docente_id")
+    private Docente docente;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "aula_id")
     private Aula aula;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 15)
-    private DiaSemana dia;
+    @Min(1)
+    @Max(6)
+    private Integer dia;
 
-    @Column(nullable = false)
-    private LocalTime horaInicio;
+    @Min(0)
+    @Max(1439)
+    @Column(name = "minuto_inicio")
+    private Integer minutoInicio;
 
-    @Column(nullable = false)
-    private LocalTime horaFin;
+    @Min(1)
+    @Max(1440)
+    @Column(name = "minuto_fin")
+    private Integer minutoFin;
 
     public SesionClase() {
     }
 
-    public SesionClase(Horario horario, Grupo grupo, Aula aula, DiaSemana dia, LocalTime horaInicio, LocalTime horaFin) {
-        this.horario = horario;
+    public SesionClase(Grupo grupo) {
         this.grupo = grupo;
-        this.aula = aula;
+        this.horario = grupo.getHorario();
+        this.docente = grupo.getDocente();
+    }
+
+    public boolean estaUbicada() {
+        return dia != null && minutoInicio != null && minutoFin != null;
+    }
+
+    public void ubicar(Integer dia, Integer minutoInicio, Integer minutoFin, Aula aula) {
         this.dia = dia;
-        this.horaInicio = horaInicio;
-        this.horaFin = horaFin;
+        this.minutoInicio = minutoInicio;
+        this.minutoFin = minutoFin;
+        this.aula = aula;
+    }
+
+    public void desubicar() {
+        ubicar(null, null, null, null);
     }
 
     public Long getId() {
@@ -68,20 +86,20 @@ public class SesionClase {
         this.id = id;
     }
 
-    public Horario getHorario() {
-        return horario;
-    }
-
-    public void setHorario(Horario horario) {
-        this.horario = horario;
-    }
-
     public Grupo getGrupo() {
         return grupo;
     }
 
     public void setGrupo(Grupo grupo) {
         this.grupo = grupo;
+    }
+
+    public void setHorario(Horario horario) {
+        this.horario = horario;
+    }
+
+    public void setDocente(Docente docente) {
+        this.docente = docente;
     }
 
     public Aula getAula() {
@@ -92,54 +110,35 @@ public class SesionClase {
         this.aula = aula;
     }
 
-    public DiaSemana getDia() {
+    public Integer getDia() {
         return dia;
     }
 
-    public void setDia(DiaSemana dia) {
+    public void setDia(Integer dia) {
         this.dia = dia;
     }
 
-    public LocalTime getHoraInicio() {
-        return horaInicio;
+    public Integer getMinutoInicio() {
+        return minutoInicio;
     }
 
-    public void setHoraInicio(LocalTime horaInicio) {
-        this.horaInicio = horaInicio;
+    public void setMinutoInicio(Integer minutoInicio) {
+        this.minutoInicio = minutoInicio;
     }
 
-    public LocalTime getHoraFin() {
-        return horaFin;
+    public Integer getMinutoFin() {
+        return minutoFin;
     }
 
-    public void setHoraFin(LocalTime horaFin) {
-        this.horaFin = horaFin;
-    }
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, horario, grupo, aula, dia, horaInicio, horaFin);
+    public void setMinutoFin(Integer minutoFin) {
+        this.minutoFin = minutoFin;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        SesionClase other = (SesionClase) obj;
-        return Objects.equals(id, other.id)
-                && Objects.equals(horario, other.horario)
-                && Objects.equals(grupo, other.grupo)
-                && Objects.equals(aula, other.aula)
-                && Objects.equals(dia, other.dia)
-                && Objects.equals(horaInicio, other.horaInicio)
-                && Objects.equals(horaFin, other.horaFin);
+    public Horario getHorario() {
+        return horario;
     }
 
-    @Override
-    public String toString() {
-        return "SesionClase [id=" + id + ", horario=" + horario + ", grupo=" + grupo + ", aula=" + aula + ", dia=" + dia + ", horaInicio=" + horaInicio + ", horaFin=" + horaFin + "]";
+    public Docente getDocente() {
+        return docente;
     }
 }

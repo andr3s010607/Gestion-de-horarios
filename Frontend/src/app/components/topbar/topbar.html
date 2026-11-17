@@ -1,0 +1,60 @@
+<header class="barra-superior">
+  <button type="button" class="btn-icono menu" (click)="abrirMenu.emit()" aria-label="Abrir menú">
+    <app-icono nombre="menu" [tamano]="20" />
+  </button>
+
+  <div class="saludo">
+    <h1>{{ saludo }}, {{ sesion()?.nombreUsuario }}</h1>
+    <p>{{ subtitulo() }}</p>
+  </div>
+
+  <form class="buscador" role="search" (submit)="buscarEnModulo($event)">
+    <label for="busqueda-global" class="oculto-visual">Buscar asignaturas, docentes o aulas</label>
+    <app-icono nombre="buscar" [tamano]="18" />
+    <input id="busqueda-global" type="search" autocomplete="off" placeholder="Buscar asignatura, docente o aula"
+           [value]="termino()" (input)="alEscribir($any($event.target).value)"
+           (focus)="panelAbierto.set(termino().trim().length > 0)" />
+
+    @if (panelAbierto()) {
+      <div class="resultados" role="listbox">
+        @if (buscando()) {
+          <p class="sin-resultados">Buscando…</p>
+        } @else if (resultados().length === 0) {
+          <p class="sin-resultados">Sin coincidencias para «{{ termino() }}».</p>
+        } @else {
+          @for (resultado of resultados(); track resultado.tipo + resultado.titulo + resultado.detalle) {
+            <button type="button" class="resultado" role="option" (click)="irAResultado(resultado)">
+              <span class="resultado-icono"><app-icono [nombre]="resultado.icono" [tamano]="16" /></span>
+              <span class="resultado-texto">
+                <strong>{{ resultado.titulo }}</strong>
+                <small>{{ resultado.tipo }} · {{ resultado.detalle }}</small>
+              </span>
+            </button>
+          }
+        }
+      </div>
+    }
+  </form>
+
+  <div class="usuario">
+    <button type="button" class="usuario-boton" (click)="menuUsuarioAbierto.set(!menuUsuarioAbierto())"
+            [attr.aria-expanded]="menuUsuarioAbierto()" aria-haspopup="menu">
+      <span class="avatar">{{ iniciales() }}</span>
+      <span class="usuario-texto">
+        <strong>{{ sesion()?.nombreUsuario }}</strong>
+        <small>{{ etiquetaRol() }}</small>
+      </span>
+    </button>
+    @if (menuUsuarioAbierto()) {
+      <div class="menu-usuario" role="menu">
+        <div class="menu-encabezado">
+          <strong>{{ sesion()?.nombreUsuario }}</strong>
+          <span class="pildora pildora-verde">{{ etiquetaRol() }}</span>
+        </div>
+        <button type="button" role="menuitem" (click)="cerrarSesion()">
+          <app-icono nombre="salir" [tamano]="17" /> Cerrar sesión
+        </button>
+      </div>
+    }
+  </div>
+</header>

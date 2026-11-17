@@ -1,1 +1,6 @@
 co\edu\unbosque\gestorhorarios\GestorhorariosApplicationTests.class
+co\edu\unbosque\gestorhorarios\service\ValidadoresTest.class
+co\edu\unbosque\gestorhorarios\ArquitecturaTest.class
+co\edu\unbosque\gestorhorarios\service\DatosDePrueba.class
+co\edu\unbosque\gestorhorarios\service\GeneradorHorarioTest.class
+co\edu\unbosque\gestorhorarios\service\ReglaHorarioServiceTest.class

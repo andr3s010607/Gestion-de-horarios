@@ -1,7 +1,5 @@
 package co.edu.unbosque.gestorhorarios.entity;
 
-import java.util.Objects;
-
 import co.edu.unbosque.gestorhorarios.enums.TipoVinculacion;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,42 +8,33 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 
-/** Docente disponible para dictar asignaturas durante la planeación. */
 @Entity
-@Table(name = "docentes")
+@Table(name = "docente")
 public class Docente {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 80)
-    private String nombres;
-
-    @Column(nullable = false, length = 80)
-    private String apellidos;
-
-    @Column(nullable = false, unique = true, length = 120)
-    private String correo;
+    @Column(nullable = false, length = 120)
+    private String nombre;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 30)
-    private TipoVinculacion tipoVinculacion;
+    @Column(nullable = false, length = 20)
+    private TipoVinculacion vinculacion;
 
-    @Column(nullable = false)
-    private boolean activo = true;
+    @OneToMany(mappedBy = "docente")
+    private List<RestriccionHorariaDocente> restricciones = new ArrayList<>();
+
+    @OneToMany(mappedBy = "docente")
+    private List<DocenteAsignatura> habilitaciones = new ArrayList<>();
 
     public Docente() {
-    }
-
-    public Docente(String nombres, String apellidos, String correo, TipoVinculacion tipoVinculacion, boolean activo) {
-        this.nombres = nombres;
-        this.apellidos = apellidos;
-        this.correo = correo;
-        this.tipoVinculacion = tipoVinculacion;
-        this.activo = activo;
     }
 
     public Long getId() {
@@ -56,70 +45,35 @@ public class Docente {
         this.id = id;
     }
 
-    public String getNombres() {
-        return nombres;
+    public String getNombre() {
+        return nombre;
     }
 
-    public void setNombres(String nombres) {
-        this.nombres = nombres;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
-    public String getApellidos() {
-        return apellidos;
+    public TipoVinculacion getVinculacion() {
+        return vinculacion;
     }
 
-    public void setApellidos(String apellidos) {
-        this.apellidos = apellidos;
+    public void setVinculacion(TipoVinculacion vinculacion) {
+        this.vinculacion = vinculacion;
     }
 
-    public String getCorreo() {
-        return correo;
+    public List<RestriccionHorariaDocente> getRestricciones() {
+        return restricciones;
     }
 
-    public void setCorreo(String correo) {
-        this.correo = correo;
+    public void setRestricciones(List<RestriccionHorariaDocente> restricciones) {
+        this.restricciones = restricciones;
     }
 
-    public TipoVinculacion getTipoVinculacion() {
-        return tipoVinculacion;
+    public List<DocenteAsignatura> getHabilitaciones() {
+        return habilitaciones;
     }
 
-    public void setTipoVinculacion(TipoVinculacion tipoVinculacion) {
-        this.tipoVinculacion = tipoVinculacion;
-    }
-
-    public boolean isActivo() {
-        return activo;
-    }
-
-    public void setActivo(boolean activo) {
-        this.activo = activo;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, nombres, apellidos, correo, tipoVinculacion, activo);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Docente other = (Docente) obj;
-        return Objects.equals(id, other.id)
-                && Objects.equals(nombres, other.nombres)
-                && Objects.equals(apellidos, other.apellidos)
-                && Objects.equals(correo, other.correo)
-                && Objects.equals(tipoVinculacion, other.tipoVinculacion)
-                && activo == other.activo;
-    }
-
-    @Override
-    public String toString() {
-        return "Docente [id=" + id + ", nombres=" + nombres + ", apellidos=" + apellidos + ", correo=" + correo + ", tipoVinculacion=" + tipoVinculacion + ", activo=" + activo + "]";
+    public void setHabilitaciones(List<DocenteAsignatura> habilitaciones) {
+        this.habilitaciones = habilitaciones;
     }
 }

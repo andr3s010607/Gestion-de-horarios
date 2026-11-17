@@ -1,0 +1,146 @@
+<div class="contenedor" [class.con-bandeja]="cuadricula().sesionesSinUbicar.length > 0 || editable()">
+  <div class="tablero">
+    @if (editable()) {
+      <p class="ayuda"><app-icono nombre="info" [tamano]="15" /> Arrastra una sesión a otra franja o haz clic sobre ella para moverla. Suéltala en la bandeja para desubicarla.</p>
+    }
+    <div class="rejilla" [style.--columnas]="columnas().length">
+      <div class="esquina"></div>
+      @for (columna of columnas(); track columna.valor) {
+        <div class="cabecera-dia"><span class="largo">{{ columna.etiqueta }}</span><span class="corto">{{ columna.corta }}</span></div>
+      }
+
+      <div class="horas" [style.height.px]="altoTotal()">
+        @for (hora of horas(); track hora) {
+          <span class="hora" [style.height.px]="altoHora">{{ hora }}</span>
+        }
+      </div>
+
+      @for (columna of columnas(); track columna.valor) {
+        <div class="dia" [style.height.px]="altoTotal()" [style.--alto-hora.px]="altoHora">
+          @for (bloqueo of columna.bloqueos; track $index) {
+            <div class="bloqueo" [style.top.px]="bloqueo.arriba" [style.height.px]="bloqueo.alto"><span>{{ bloqueo.etiqueta }}</span></div>
+          }
+          @if (editable()) {
+            @for (ranura of columna.ranuras; track ranura.hora) {
+              <div class="ranura" [class.activa]="ranuraActiva() === columna.valor + ranura.hora" [class.visible]="arrastrando()"
+                   [style.top.px]="ranura.arriba" [style.height.px]="altoHora"
+                   (dragover)="sobreRanura($event, columna.valor + ranura.hora)" (dragleave)="ranuraActiva.set(null)"
+                   (drop)="soltarEnRanura($event, columna.valor, ranura.hora)">
+                @if (ranuraActiva() === columna.valor + ranura.hora) { <span>{{ horaCorta(ranura.hora) }}</span> }
+              </div>
+            }
+          }
+          @for (bloque of columna.bloques; track bloque.sesion.id) {
+            <button type="button" class="sesion" [class]="'sesion tono-' + bloque.tono" [class.fantasma]="arrastrando()?.id === bloque.sesion.id"
+                    [class.atravesable]="soltando()"
+                    [style.top.px]="bloque.arriba + 2" [style.height.px]="bloque.alto - 4"
+                    [style.left]="'calc(' + (bloque.carril * 100 / bloque.carriles) + '% + 3px)'"
+                    [style.width]="'calc(' + (100 / bloque.carriles) + '% - 6px)'"
+                    [draggable]="editable()" (dragstart)="iniciarArrastre($event, bloque.sesion)" (dragend)="terminarArrastre()"
+                    (click)="abrirMovimiento(bloque.sesion)"
+                    [attr.aria-label]="bloque.sesion.nombreAsignatura + ' grupo ' + bloque.sesion.numeroGrupo + ', ' + columna.etiqueta + ' ' + horaCorta(bloque.sesion.horaInicio) + ', aula ' + bloque.sesion.codigoAula">
+              <strong>{{ bloque.sesion.codigoAsignatura }} · G{{ bloque.sesion.numeroGrupo }}</strong>
+              <span class="detalle">{{ horaCorta(bloque.sesion.horaInicio) }}–{{ horaCorta(bloque.sesion.horaFin) }}</span>
+              <span class="detalle">{{ bloque.sesion.codigoAula }}</span>
+              @if (bloque.sesion.nombreDocente) { <span class="detalle docente">{{ bloque.sesion.nombreDocente }}</span> }
+            </button>
+          }
+        </div>
+      }
+    </div>
+  </div>
+
+  @if (cuadricula().sesionesSinUbicar.length > 0 || editable()) {
+    <aside class="bandeja" [class.activa]="bandejaActiva()" (dragover)="sobreBandeja($event)" (dragleave)="bandejaActiva.set(false)" (drop)="soltarEnBandeja($event)">
+      <div class="titulo-bandeja">
+        <app-icono nombre="bandeja" [tamano]="18" />
+        <h4>Sin ubicar</h4>
+        <span class="pildora" [class.pildora-advertencia]="cuadricula().sesionesSinUbicar.length" [class.pildora-verde]="!cuadricula().sesionesSinUbicar.length">
+          {{ cuadricula().sesionesSinUbicar.length }}
+        </span>
+      </div>
+      @if (cuadricula().sesionesSinUbicar.length === 0) {
+        <p class="vacia">Todas las sesiones están ubicadas.</p>
+      } @else {
+        <div class="lista-bandeja">
+          @for (sesion of cuadricula().sesionesSinUbicar; track sesion.id) {
+            <button type="button" [class]="'tarjeta-bandeja tono-' + tono(sesion)" [draggable]="editable()"
+                    (dragstart)="iniciarArrastre($event, sesion)" (dragend)="terminarArrastre()" (click)="abrirMovimiento(sesion)">
+              <strong>{{ sesion.codigoAsignatura }} · G{{ sesion.numeroGrupo }}</strong>
+              <span>{{ sesion.nombreAsignatura }}</span>
+              <span class="docente">{{ sesion.nombreDocente ?? 'Sin docente' }}</span>
+            </button>
+          }
+        </div>
+      }
+    </aside>
+  }
+</div>
+
+@if (seleccionada(); as sesion) {
+  <app-modal [titulo]="sesion.codigoAsignatura + ' · Grupo ' + sesion.numeroGrupo" [subtitulo]="sesion.nombreAsignatura" (cerrar)="cerrarMovimiento()">
+    <div class="resumen-sesion">
+      <div><span>Docente</span><strong>{{ sesion.nombreDocente ?? 'Sin docente' }}</strong></div>
+      <div><span>Ubicación actual</span><strong>
+        @if (sesion.ubicada) { {{ etiquetaDia(sesion.dia) }} {{ horaCorta(sesion.horaInicio) }}–{{ horaCorta(sesion.horaFin) }} · {{ sesion.codigoAula }} }
+        @else { En la bandeja }
+      </strong></div>
+      <div><span>Duración</span><strong>{{ sesion.duracionHoras }} h</strong></div>
+    </div>
+
+    @if (editable()) {
+      @if (errorMovimiento(); as error) {
+        <div class="alerta alerta-error" role="alert">
+          <strong>{{ error.mensaje }}</strong>
+          @if (error.incidencias.length) {
+            <ul class="lista-incidencias">
+              @for (incidencia of error.incidencias; track $index) {
+                <li><span class="codigo">{{ incidencia.codigo }}</span> {{ incidencia.mensaje }}</li>
+              }
+            </ul>
+          }
+        </div>
+      }
+
+      <form class="formulario mover" [formGroup]="formulario" (ngSubmit)="confirmarMovimiento()" novalidate>
+        <div class="campo" [class.invalido]="invalido('dia')">
+          <label for="mover-dia">Día</label>
+          <select id="mover-dia" formControlName="dia" (change)="alCambiarDia($any($event.target).value)">
+            <option value="" disabled>Selecciona el día</option>
+            @for (dia of dias; track dia.valor) { <option [value]="dia.valor">{{ dia.etiqueta }}</option> }
+          </select>
+          @if (invalido('dia')) { <span class="error-campo">El día es obligatorio</span> }
+        </div>
+        <div class="campo" [class.invalido]="invalido('horaInicio')">
+          <label for="mover-hora">Hora de inicio</label>
+          <select id="mover-hora" formControlName="horaInicio">
+            <option value="" disabled>Selecciona la hora</option>
+            @for (hora of horasDelDiaElegido(); track hora) { <option [value]="hora">{{ horaCorta(hora) }}</option> }
+          </select>
+          @if (invalido('horaInicio')) { <span class="error-campo">La hora de inicio es obligatoria</span> }
+        </div>
+        <div class="campo completo" [class.invalido]="invalido('aulaId')">
+          <label for="mover-aula">Aula de destino</label>
+          <select id="mover-aula" formControlName="aulaId">
+            <option value="" disabled>Selecciona el aula</option>
+            @for (aula of aulas(); track aula.id) {
+              <option [value]="aula.id">{{ aula.codigo }} · {{ etiquetaTipo(aula) }} · {{ aula.capacidad }} puestos{{ aulasOcupadas().has(aula.id!) ? ' · ocupada a esa hora' : '' }}</option>
+            }
+          </select>
+          @if (invalido('aulaId')) { <span class="error-campo">El aula de destino es obligatoria</span> }
+        </div>
+        <div class="acciones-formulario">
+          @if (sesion.ubicada) {
+            <button type="button" class="btn btn-secundario" style="margin-right: auto" (click)="devolverSeleccionada()" [disabled]="moviendo()">
+              <app-icono nombre="bandeja" [tamano]="16" /> A la bandeja
+            </button>
+          }
+          <button type="button" class="btn btn-secundario" (click)="cerrarMovimiento()" [disabled]="moviendo()">Cancelar</button>
+          <button type="submit" class="btn btn-primario" [disabled]="moviendo()">
+            @if (moviendo()) { <app-spinner class="en-linea" /> } {{ sesion.ubicada ? 'Mover sesión' : 'Ubicar sesión' }}
+          </button>
+        </div>
+      </form>
+    }
+  </app-modal>
+}

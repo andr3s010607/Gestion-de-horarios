@@ -1,26 +1,24 @@
 package co.edu.unbosque.gestorhorarios.dto;
 
-import java.util.Objects;
-
 public class LoginDTO {
 
-    private String correo;
+    private String nombreUsuario;
     private String contrasena;
 
     public LoginDTO() {
     }
 
-    public LoginDTO(String correo, String contrasena) {
-        this.correo = correo;
+    public LoginDTO(String nombreUsuario, String contrasena) {
+        this.nombreUsuario = nombreUsuario;
         this.contrasena = contrasena;
     }
 
-    public String getCorreo() {
-        return correo;
+    public String getNombreUsuario() {
+        return nombreUsuario;
     }
 
-    public void setCorreo(String correo) {
-        this.correo = correo;
+    public void setNombreUsuario(String nombreUsuario) {
+        this.nombreUsuario = nombreUsuario;
     }
 
     public String getContrasena() {
@@ -29,27 +27,5 @@ public class LoginDTO {
 
     public void setContrasena(String contrasena) {
         this.contrasena = contrasena;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(correo, contrasena);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-        LoginDTO other = (LoginDTO) obj;
-        return Objects.equals(correo, other.correo) && Objects.equals(contrasena, other.contrasena);
-    }
-
-    @Override
-    public String toString() {
-        return "LoginDTO [correo=" + correo + ", contrasena=" + contrasena + "]";
     }
 }

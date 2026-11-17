@@ -1,131 +1,109 @@
 package co.edu.unbosque.gestorhorarios.service;
 
-import java.util.List;
-import java.time.LocalTime;
-
-import org.springframework.stereotype.Service;
-
 import co.edu.unbosque.gestorhorarios.dto.ParametroSistemaDTO;
 import co.edu.unbosque.gestorhorarios.entity.ParametroSistema;
+import co.edu.unbosque.gestorhorarios.enums.DiaSemana;
+import co.edu.unbosque.gestorhorarios.exception.DatoInvalidoException;
 import co.edu.unbosque.gestorhorarios.repository.ParametroSistemaRepository;
-import co.edu.unbosque.gestorhorarios.enums.TipoDatoParametro;
+import java.time.LocalTime;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ParametroSistemaService implements CRUDOperation<ParametroSistemaDTO> {
+@Transactional
+public class ParametroSistemaService {
 
     private final ParametroSistemaRepository parametroSistemaRepository;
+    private final ReglaHorarioService reglaHorarioService;
+    private final ProteccionHorarioAprobadoService proteccionHorarioAprobado;
 
-    public ParametroSistemaService(ParametroSistemaRepository parametroSistemaRepository) {
+    public ParametroSistemaService(ParametroSistemaRepository parametroSistemaRepository,
+            ReglaHorarioService reglaHorarioService, ProteccionHorarioAprobadoService proteccionHorarioAprobado) {
         this.parametroSistemaRepository = parametroSistemaRepository;
+        this.reglaHorarioService = reglaHorarioService;
+        this.proteccionHorarioAprobado = proteccionHorarioAprobado;
     }
 
-    @Override
-    public int create(ParametroSistemaDTO dto) {
-        try {
-            if (dto == null) {
-                return 1;
-            }
-            if (!validar(dto).isEmpty() || parametroSistemaRepository.findByClave(dto.getClave()).isPresent()) {
-                return 1;
-            }
-            ParametroSistema entity = convertirAEntidad(dto);
-            if (entity == null) {
-                return 1;
-            }
-            parametroSistemaRepository.save(entity);
-            return 0;
-        } catch (Exception e) {
-            return 1;
+    @Transactional(readOnly = true)
+    public ParametroSistemaDTO getParametros() {
+        ParametroSistemaDTO dto = new ParametroSistemaDTO();
+        dto.setHoraInicioLunesViernes(ReglaHorarioService.convertirAHora(reglaHorarioService.minutoInicioFranja()));
+        dto.setHoraFinLunesViernes(ReglaHorarioService
+                .convertirAHora(reglaHorarioService.minutoFinFranja(DiaSemana.LUNES.getNumero())));
+        dto.setHoraFinSabado(ReglaHorarioService
+                .convertirAHora(reglaHorarioService.minutoFinFranja(DiaSemana.SABADO.getNumero())));
+        dto.setHoraInicioPausa(ReglaHorarioService.convertirAHora(reglaHorarioService.minutoInicioPausa()));
+        dto.setHoraFinPausa(ReglaHorarioService.convertirAHora(reglaHorarioService.minutoFinPausa()));
+        dto.setDuracionSesionHoras(reglaHorarioService.duracionSesionHoras());
+        dto.setCupoMaximo(reglaHorarioService.cupoMaximo());
+        dto.setToleranciaCupoPorcentaje(reglaHorarioService.toleranciaCupoPorcentaje());
+        return dto;
+    }
+
+    public ParametroSistemaDTO actualizar(ParametroSistemaDTO dto) {
+        validar(dto);
+        proteccionHorarioAprobado.aplicarSinDanarHorariosAprobados(() -> {
+            guardarHora(ReglaHorarioService.HORA_INICIO_LUNES_VIERNES, dto.getHoraInicioLunesViernes());
+            guardarHora(ReglaHorarioService.HORA_FIN_LUNES_VIERNES, dto.getHoraFinLunesViernes());
+            guardarHora(ReglaHorarioService.HORA_FIN_SABADO, dto.getHoraFinSabado());
+            guardarHora(ReglaHorarioService.HORA_INICIO_PAUSA, dto.getHoraInicioPausa());
+            guardarHora(ReglaHorarioService.HORA_FIN_PAUSA, dto.getHoraFinPausa());
+            guardarEntero(ReglaHorarioService.DURACION_SESION_HORAS, dto.getDuracionSesionHoras());
+            guardarEntero(ReglaHorarioService.CUPO_MAXIMO, dto.getCupoMaximo());
+            guardarEntero(ReglaHorarioService.TOLERANCIA_CUPO_PORCENTAJE, dto.getToleranciaCupoPorcentaje());
+        });
+        return getParametros();
+    }
+
+    private void validar(ParametroSistemaDTO dto) {
+        if (dto == null || dto.getHoraInicioLunesViernes() == null || dto.getHoraFinLunesViernes() == null
+                || dto.getHoraFinSabado() == null || dto.getHoraInicioPausa() == null
+                || dto.getHoraFinPausa() == null || dto.getDuracionSesionHoras() == null
+                || dto.getCupoMaximo() == null || dto.getToleranciaCupoPorcentaje() == null) {
+            throw new DatoInvalidoException("Todos los parámetros son obligatorios");
+        }
+        if (!dto.getHoraFinLunesViernes().isAfter(dto.getHoraInicioLunesViernes())) {
+            throw new DatoInvalidoException(
+                    "La hora de fin de la franja de lunes a viernes debe ser posterior a la de inicio");
+        }
+        if (!dto.getHoraFinSabado().isAfter(dto.getHoraInicioLunesViernes())) {
+            throw new DatoInvalidoException("La hora de fin del sábado debe ser posterior a la de inicio de la franja");
+        }
+        if (!dto.getHoraFinPausa().isAfter(dto.getHoraInicioPausa())) {
+            throw new DatoInvalidoException("La hora de fin de la pausa del mediodía debe ser posterior a la de inicio");
+        }
+        if (dto.getDuracionSesionHoras() <= 0) {
+            throw new DatoInvalidoException("La duración de la sesión debe ser un valor positivo");
+        }
+        if (dto.getCupoMaximo() <= 0) {
+            throw new DatoInvalidoException("El cupo máximo debe ser un valor positivo");
+        }
+        if (dto.getToleranciaCupoPorcentaje() < 0) {
+            throw new DatoInvalidoException("El porcentaje de tolerancia no puede ser negativo");
+        }
+        if (dto.getHoraInicioPausa().isBefore(dto.getHoraInicioLunesViernes())
+                || dto.getHoraFinPausa().isAfter(dto.getHoraFinLunesViernes())) {
+            throw new DatoInvalidoException("La pausa del mediodía debe quedar dentro de la franja de lunes a viernes");
+        }
+        int duracionMinutos = dto.getDuracionSesionHoras() * ReglaHorarioService.MINUTOS_POR_HORA;
+        if (ReglaHorarioService.calcularIniciosValidos(
+                ReglaHorarioService.convertirAMinutos(dto.getHoraInicioLunesViernes()),
+                ReglaHorarioService.convertirAMinutos(dto.getHoraFinLunesViernes()),
+                ReglaHorarioService.convertirAMinutos(dto.getHoraInicioPausa()),
+                ReglaHorarioService.convertirAMinutos(dto.getHoraFinPausa()), duracionMinutos).isEmpty()) {
+            throw new DatoInvalidoException("Con esa duración de sesión no cabe ninguna sesión en la franja de lunes "
+                    + "a viernes sin cruzar la pausa");
         }
     }
 
-    @Override
-    public List<ParametroSistemaDTO> getAll() {
-        return parametroSistemaRepository.findAll().stream().map(this::convertirADTO).toList();
+    private void guardarHora(String clave, LocalTime hora) {
+        guardarEntero(clave, ReglaHorarioService.convertirAMinutos(hora));
     }
 
-    public ParametroSistemaDTO getById(Long id) {
-        return parametroSistemaRepository.findById(id).map(this::convertirADTO).orElse(null);
-    }
-
-    @Override
-    public int deleteById(Long id) {
-        if (!parametroSistemaRepository.existsById(id)) {
-            return 1;
-        }
-        parametroSistemaRepository.deleteById(id);
-        return 0;
-    }
-
-    @Override
-    public int updateById(Long id, ParametroSistemaDTO dto) {
-        try {
-            if (!parametroSistemaRepository.existsById(id) || dto == null) {
-                return 1;
-            }
-            if (!validar(dto).isEmpty()
-                    || parametroSistemaRepository.findByClave(dto.getClave())
-                            .filter(parametro -> !parametro.getId().equals(id)).isPresent()) {
-                return 1;
-            }
-            ParametroSistema entity = convertirAEntidad(dto);
-            if (entity == null) {
-                return 1;
-            }
-            entity.setId(id);
-            parametroSistemaRepository.save(entity);
-            return 0;
-        } catch (Exception e) {
-            return 1;
-        }
-    }
-
-    @Override
-    public long count() {
-        return parametroSistemaRepository.count();
-    }
-
-    @Override
-    public boolean exist(Long id) {
-        return parametroSistemaRepository.existsById(id);
-    }
-
-    public List<String> validar(ParametroSistemaDTO dto) {
-        if (dto == null || dto.getClave() == null || dto.getClave().isBlank() || dto.getValor() == null
-                || dto.getTipoDato() == null) {
-            return List.of("La clave, el valor y el tipo de dato son obligatorios");
-        }
-        try {
-            switch (dto.getTipoDato()) {
-                case ENTERO -> Integer.parseInt(dto.getValor());
-                case DECIMAL -> new java.math.BigDecimal(dto.getValor());
-                case BOOLEANO -> {
-                    if (!"true".equalsIgnoreCase(dto.getValor()) && !"false".equalsIgnoreCase(dto.getValor())) {
-                        throw new IllegalArgumentException();
-                    }
-                }
-                case HORA -> LocalTime.parse(dto.getValor());
-                case TEXTO -> {
-                }
-            }
-        } catch (Exception e) {
-            return List.of("El valor no corresponde al tipo de dato indicado");
-        }
-        return List.of();
-    }
-
-    private ParametroSistema convertirAEntidad(ParametroSistemaDTO dto) {
-        ParametroSistema entity = new ParametroSistema();
-        entity.setClave(dto.getClave());
-        entity.setValor(dto.getValor());
-        entity.setTipoDato(dto.getTipoDato());
-        entity.setDescripcion(dto.getDescripcion());
-        entity.setActivo(dto.isActivo());
-        return entity;
-    }
-
-    private ParametroSistemaDTO convertirADTO(ParametroSistema entity) {
-        return new ParametroSistemaDTO(entity.getId(), entity.getClave(), entity.getValor(), entity.getTipoDato(), entity.getDescripcion(), entity.isActivo());
+    private void guardarEntero(String clave, Integer valor) {
+        ParametroSistema parametro = parametroSistemaRepository.findById(clave)
+                .orElseGet(() -> new ParametroSistema(clave, null));
+        parametro.setValor(String.valueOf(valor));
+        parametroSistemaRepository.save(parametro);
     }
 }
-

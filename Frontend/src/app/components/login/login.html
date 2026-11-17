@@ -1,0 +1,76 @@
+<main class="pantalla">
+  <section class="panel-marca" aria-hidden="true">
+    <div class="logo">
+      <span class="logo-marca"><app-icono nombre="hoja" [tamano]="22" /></span>
+      <span>Gestor de horarios</span>
+    </div>
+
+    <div class="mensaje">
+      <h1>Cada clase en su lugar, sin choques.</h1>
+      <p>Genera, ajusta y aprueba el horario del semestre validando docentes, aulas y franjas en tiempo real.</p>
+    </div>
+
+    <div class="muestra">
+      <div class="muestra-dias">
+        <span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span>
+      </div>
+      <div class="muestra-cuadricula">
+        <span class="bloque verde" style="grid-column: 1; grid-row: 1 / span 2">CALC · G1</span>
+        <span class="bloque crema" style="grid-column: 2; grid-row: 2 / span 2">PROG · G2</span>
+        <span class="bloque petroleo" style="grid-column: 3; grid-row: 1 / span 2">FIS · G1</span>
+        <span class="bloque verde" style="grid-column: 4; grid-row: 3 / span 2">ALG · G3</span>
+        <span class="bloque tan" style="grid-column: 5; grid-row: 1 / span 2">BD · G1</span>
+        <span class="bloque crema" style="grid-column: 1; grid-row: 4 / span 2">EST · G2</span>
+        <span class="bloque tan" style="grid-column: 3; grid-row: 4 / span 2">RED · G1</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel-formulario">
+    <form class="formulario" [formGroup]="formulario" (ngSubmit)="iniciarSesion()" novalidate>
+      <div class="encabezado">
+        <h2>Bienvenido de nuevo</h2>
+        <p>Ingresa con tu usuario para gestionar o consultar los horarios.</p>
+      </div>
+
+      @if (sesionExpirada && !errorServidor()) {
+        <div class="alerta alerta-advertencia">Tu sesión expiró. Vuelve a iniciar sesión.</div>
+      }
+      @if (errorServidor(); as error) {
+        <div class="alerta alerta-error" role="alert">{{ error }}</div>
+      }
+
+      <div class="campo" [class.invalido]="invalido('nombreUsuario')">
+        <label for="nombreUsuario">Usuario</label>
+        <input id="nombreUsuario" type="text" formControlName="nombreUsuario" autocomplete="username"
+               [attr.maxlength]="longitudMaxima" placeholder="Tu nombre de usuario" />
+        @if (invalido('nombreUsuario')) {
+          @if (formulario.controls.nombreUsuario.hasError('required')) {
+            <span class="error-campo">El nombre de usuario es obligatorio.</span>
+          } @else {
+            <span class="error-campo">El nombre de usuario admite hasta {{ longitudMaxima }} caracteres.</span>
+          }
+        }
+      </div>
+
+      <div class="campo" [class.invalido]="invalido('contrasena')">
+        <label for="contrasena">Contraseña</label>
+        <div class="con-boton">
+          <input id="contrasena" [type]="mostrarContrasena() ? 'text' : 'password'" formControlName="contrasena"
+                 autocomplete="current-password" placeholder="Tu contraseña" />
+          <button type="button" class="ver" (click)="mostrarContrasena.set(!mostrarContrasena())"
+                  [attr.aria-label]="mostrarContrasena() ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+            <app-icono [nombre]="mostrarContrasena() ? 'ojoCerrado' : 'ojo'" [tamano]="18" />
+          </button>
+        </div>
+        @if (invalido('contrasena')) {
+          <span class="error-campo">La contraseña es obligatoria.</span>
+        }
+      </div>
+
+      <button type="submit" class="btn btn-primario enviar" [disabled]="enviando()">
+        @if (enviando()) { <app-spinner class="en-linea" /> Ingresando… } @else { Iniciar sesión }
+      </button>
+    </form>
+  </section>
+</main>
