@@ -1,0 +1,20 @@
+# Oracle Database Free para la VM.
+# Uso:  ORACLE_PASSWORD=... APP_USER_PASSWORD=... docker compose up -d
+# APP_USER/APP_USER_PASSWORD deben coincidir con SPRING_DATASOURCE_USERNAME/PASSWORD del .env.
+services:
+  oracle:
+    image: gvenzl/oracle-free:23-slim
+    container_name: oracle-gestorhorarios
+    restart: unless-stopped
+    ports:
+      # Solo accesible desde la propia VM (el backend); no se expone a internet.
+      - "127.0.0.1:1521:1521"
+    environment:
+      ORACLE_PASSWORD: ${ORACLE_PASSWORD:?define ORACLE_PASSWORD}
+      APP_USER: gestor
+      APP_USER_PASSWORD: ${APP_USER_PASSWORD:?define APP_USER_PASSWORD}
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+
+volumes:
+  oracle-data:

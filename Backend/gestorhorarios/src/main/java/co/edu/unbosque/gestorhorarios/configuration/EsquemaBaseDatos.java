@@ -8,13 +8,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-/**
- * Completa en Oracle Database los objetos del esquema que Hibernate no genera a
- * partir de las entidades (sección 5.2.3 del informe): restricciones CHECK,
- * unicidad sin distinguir mayúsculas y los tres disparadores que mantienen las
- * tablas de ocupación (RNF-08). Cada objeto se crea solo si falta, de modo que
- * una base nueva queda igual que una existente.
- */
+
 @Component
 @Order(0)
 public class EsquemaBaseDatos implements CommandLineRunner {

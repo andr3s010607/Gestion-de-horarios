@@ -52,7 +52,7 @@ export const PATRON_SEMESTRE = /^\d{4}-[12]$/;
         <div class="tarjeta"><app-spinner texto="Cargando horarios" /></div>
       } @else if (horarios().length === 0) {
         <div class="tarjeta">
-          <app-estado-vacio icono="calendario" titulo="Aún no hay horarios" mensaje="Crea el horario del semestre para registrar grupos y generar la propuesta.">
+          <app-estado-vacio icono="calendario" titulo="Aún no hay horarios" mensaje="Crea el horario del semestre para registrar grupos y armar el horario.">
             @if (auth.esAdministrador()) {
               <button type="button" class="btn btn-primario" (click)="abrirNuevo()">Crear el primero</button>
             }

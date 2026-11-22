@@ -1,4 +1,4 @@
-package co.edu.unbosque.gestorhorarios.controller;
+ package co.edu.unbosque.gestorhorarios.controller;
 
 import co.edu.unbosque.gestorhorarios.dto.LoginDTO;
 import co.edu.unbosque.gestorhorarios.dto.RespuestaAutenticacionDTO;

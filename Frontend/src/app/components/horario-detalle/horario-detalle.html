@@ -46,10 +46,6 @@
               <app-icono nombre="recargar" [tamano]="16" /> Devolver a borrador
             </button>
           } @else {
-            <button type="button" class="btn btn-claro" (click)="generar()" [disabled]="generando() || grupos().length === 0"
-                    [title]="grupos().length === 0 ? 'Registra grupos antes de generar' : 'Ubicar automáticamente las sesiones pendientes'">
-              @if (generando()) { <app-spinner class="en-linea" /> } @else { <app-icono nombre="varita" [tamano]="16" /> } Generar propuesta
-            </button>
             <button type="button" class="btn btn-acento" (click)="aprobar()" [disabled]="cambiandoEstado()">
               @if (cambiandoEstado()) { <app-spinner class="en-linea" /> } @else { <app-icono nombre="candado" [tamano]="16" /> } Aprobar
             </button>
