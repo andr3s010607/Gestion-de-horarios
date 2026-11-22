@@ -1,0 +1,17 @@
+# Túnel de ngrok hacia el backend (puerto 8081 de la propia VM).
+# Copiar a /etc/systemd/system/ngrok.service y luego:
+#      sudo systemctl daemon-reload && sudo systemctl enable --now ngrok
+# Usa el authtoken guardado con "ngrok config add-authtoken" por el usuario samuel.
+[Unit]
+Description=Tunel ngrok para Gestor de horarios
+After=network-online.target gestorhorarios.service
+Wants=network-online.target
+
+[Service]
+User=samuel
+ExecStart=/usr/local/bin/ngrok http 127.0.0.1:8081 --url=https://bolster-upstairs-antidote.ngrok-free.dev --log=stdout
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

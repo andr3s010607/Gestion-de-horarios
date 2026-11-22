@@ -8,15 +8,17 @@
 [build.environment]
   NODE_VERSION = "24"
 
-# Proxy hacia el backend de la VM.
+# Proxy hacia el backend de la VM a través del túnel de ngrok.
 # El navegador llama a https://TU-SITIO.netlify.app/api/... y Netlify reenvía
-# la petición a la VM, así se evita el bloqueo por "mixed content" y el CORS.
-# Si cambia la IP pública (o dominio) de la máquina virtual, actualízala aquí.
+# la petición al dominio fijo de ngrok, que llega al back dentro de la VM.
+# Dominio fijo de ngrok (Dashboard de ngrok → Domains).
+# La cabecera evita la página de aviso que ngrok muestra en el plan gratuito.
 [[redirects]]
   from = "/api/*"
-  to = "http://181.68.171.23:8081/:splat"
+  to = "https://bolster-upstairs-antidote.ngrok-free.dev/:splat"
   status = 200
   force = true
+  headers = { ngrok-skip-browser-warning = "true" }
 
 # Rutas de Angular: cualquier otra URL carga index.html (evita 404 al recargar).
 [[redirects]]

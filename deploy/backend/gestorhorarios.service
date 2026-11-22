@@ -3,7 +3,7 @@
 #   sudo systemctl daemon-reload && sudo systemctl enable --now gestorhorarios
 [Unit]
 Description=Gestor de horarios (Spring Boot)
-After=network-online.target docker.service
+After=network-online.target oracle-free-26ai.service
 Wants=network-online.target
 
 [Service]
@@ -11,7 +11,8 @@ User=gestorhorarios
 WorkingDirectory=/opt/gestorhorarios
 EnvironmentFile=/opt/gestorhorarios/gestorhorarios.env
 # El build genera un .war ejecutable de Spring Boot; se arranca igual con java -jar.
-ExecStart=/usr/bin/java -jar /opt/gestorhorarios/gestorhorarios.war
+# Ruta completa a Java 25: en la VM /usr/bin/java es Java 8 y no sirve.
+ExecStart=/usr/lib/jvm/java-25-openjdk/bin/java -jar /opt/gestorhorarios/gestorhorarios.war
 Restart=always
 RestartSec=10
 SuccessExitStatus=143
