@@ -1,0 +1,25 @@
+# Configuración de despliegue en Netlify.
+# En Netlify: Base directory = Frontend (el resto lo toma de este archivo).
+
+[build]
+  command = "npm run build"
+  publish = "dist/Frontend/browser"
+
+[build.environment]
+  NODE_VERSION = "24"
+
+# Proxy hacia el backend de la VM.
+# El navegador llama a https://TU-SITIO.netlify.app/api/... y Netlify reenvía
+# la petición a la VM, así se evita el bloqueo por "mixed content" y el CORS.
+# Si cambia la IP pública (o dominio) de la máquina virtual, actualízala aquí.
+[[redirects]]
+  from = "/api/*"
+  to = "http://181.68.171.23:8081/:splat"
+  status = 200
+  force = true
+
+# Rutas de Angular: cualquier otra URL carga index.html (evita 404 al recargar).
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

@@ -1,0 +1,20 @@
+# Servicio systemd del backend.
+# Copiar a /etc/systemd/system/gestorhorarios.service y luego:
+#   sudo systemctl daemon-reload && sudo systemctl enable --now gestorhorarios
+[Unit]
+Description=Gestor de horarios (Spring Boot)
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+User=gestorhorarios
+WorkingDirectory=/opt/gestorhorarios
+EnvironmentFile=/opt/gestorhorarios/gestorhorarios.env
+# El build genera un .war ejecutable de Spring Boot; se arranca igual con java -jar.
+ExecStart=/usr/bin/java -jar /opt/gestorhorarios/gestorhorarios.war
+Restart=always
+RestartSec=10
+SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target
