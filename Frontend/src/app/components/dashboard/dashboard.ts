@@ -54,6 +54,38 @@ export class Dashboard implements OnInit {
     return { ubicadas, sinUbicar: cuadricula.sesionesSinUbicar.length, total, porcentaje: total ? Math.round((ubicadas / total) * 100) : 0 };
   });
 
+  protected readonly horariosOrdenados = computed(() =>
+    [...this.horarios()].sort((a, b) => b.semestre.localeCompare(a.semestre)));
+
+  protected readonly grupos = computed(() => {
+    const cuadricula = this.cuadricula();
+    if (!cuadricula) {
+      return 0;
+    }
+    return new Set([...cuadricula.sesionesUbicadas, ...cuadricula.sesionesSinUbicar].map(sesion => sesion.grupoId)).size;
+  });
+
+  protected readonly accesos = computed(() => {
+    const rol = this.auth.rol();
+    const comunes = [
+      { titulo: 'Horarios', detalle: 'Cuadrícula semanal', icono: 'calendario', ruta: '/horarios' },
+      { titulo: 'Consultas', detalle: 'Por docente, aula o asignatura', icono: 'buscar', ruta: '/consultas' }
+    ];
+    if (rol === 'ESTUDIANTE') {
+      return [...comunes,
+        { titulo: 'Preselección', detalle: 'Elige tus grupos', icono: 'check', ruta: '/preseleccion' },
+        { titulo: 'Asignaturas', detalle: 'Oferta del programa', icono: 'libro', ruta: '/asignaturas' }];
+    }
+    if (rol === 'ADMINISTRADOR') {
+      return [...comunes,
+        { titulo: 'Docentes', detalle: 'Restricciones y habilitaciones', icono: 'personas', ruta: '/docentes' },
+        { titulo: 'Parámetros', detalle: 'Franja, pausa y cupo', icono: 'ajustes', ruta: '/parametros' }];
+    }
+    return [...comunes,
+      { titulo: 'Docentes', detalle: 'Catálogo de docentes', icono: 'personas', ruta: '/docentes' },
+      { titulo: 'Aulas', detalle: 'Espacios disponibles', icono: 'edificio', ruta: '/aulas' }];
+  });
+
   ngOnInit(): void {
     forkJoin({
       asignaturas: this.asignaturaService.contar(),

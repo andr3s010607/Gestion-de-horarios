@@ -142,7 +142,7 @@
             <button type="button" class="btn btn-secundario" (click)="exportar()" [disabled]="confirmados().length === 0 || exportando()"
                     [title]="confirmados().length === 0 ? 'Confirma tu preselección para poder exportarla'
                       : hayCambios() ? 'Exporta la preselección confirmada, sin los cambios que no has guardado' : ''">
-              @if (exportando()) { <app-spinner class="en-linea" /> } @else { <app-icono nombre="descargar" [tamano]="16" /> } Exportar CSV
+              @if (exportando()) { <app-spinner class="en-linea" /> } @else { <app-icono nombre="descargar" [tamano]="16" /> } Exportar PDF
             </button>
           </div>
 

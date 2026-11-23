@@ -10,7 +10,7 @@ import { Icono } from '../icono/icono';
     .controles { display: flex; align-items: center; gap: 6px; }
     .numero { min-width: 34px; height: 34px; padding: 0 8px; border: 1px solid transparent; border-radius: 999px; background: transparent; cursor: pointer; color: var(--texto); }
     .numero:hover { background: var(--crema); }
-    .numero.activa { background: var(--fig-leaf); color: #fff; font-weight: 600; }
+    .numero.activa { background: var(--moss-oscuro); color: var(--texto-claro); font-weight: 600; }
     .btn-icono { width: 34px; height: 34px; }
     .btn-icono:disabled { opacity: 0.4; cursor: not-allowed; }
   `,

@@ -43,7 +43,7 @@
 
 .buscador:focus-within {
   border-color: var(--fig-leaf);
-  box-shadow: 0 0 0 3px rgba(85, 111, 48, 0.15);
+  box-shadow: 0 0 0 3px rgba(139, 163, 136, 0.22);
 }
 
 .buscador input {
@@ -65,7 +65,7 @@
   border: 1px solid var(--borde);
   border-radius: var(--radio);
   background: var(--crema-claro);
-  box-shadow: 0 16px 40px rgba(54, 47, 34, 0.16);
+  box-shadow: 0 16px 40px rgba(47, 69, 54, 0.16);
 }
 
 .sin-resultados {
@@ -182,7 +182,7 @@
   border: 1px solid var(--borde);
   border-radius: var(--radio);
   background: var(--crema-claro);
-  box-shadow: 0 16px 40px rgba(54, 47, 34, 0.16);
+  box-shadow: 0 16px 40px rgba(47, 69, 54, 0.16);
 }
 
 .menu-encabezado {

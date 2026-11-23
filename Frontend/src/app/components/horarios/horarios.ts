@@ -23,7 +23,7 @@ export const PATRON_SEMESTRE = /^\d{4}-[12]$/;
   styles: `
     .rejilla { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
     .horario { display: flex; flex-direction: column; gap: 14px; padding: 20px; transition: transform 0.15s, box-shadow 0.15s; }
-    .horario:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(54, 47, 34, 0.1); }
+    .horario:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(47, 69, 54, 0.1); }
     .cabecera { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
     .sello-horario { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 14px; background: var(--moss-oscuro); color: var(--fresh-crown); }
     .sello-horario.aprobado { background: var(--fig-leaf); }

@@ -12,7 +12,7 @@
 .opcion { clear: both; display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; margin-top: 6px; border: 1px solid var(--borde); border-radius: 12px; cursor: pointer; transition: border-color .15s, background .15s; }
 .opcion:hover { border-color: var(--moss); }
 .opcion.activa { border-color: var(--fig-leaf); background: var(--fresh-crown); }
-.opcion.choca { border-color: #b4412f; background: #fbe9e5; }
+.opcion.choca { border-color: var(--terracota); background: var(--terracota-fondo); }
 .opcion.fija { cursor: default; }
 .opcion.fija:hover { border-color: var(--fig-leaf); }
 .solo-lectura { display: flex; align-items: flex-start; gap: 10px; background: var(--crema); color: var(--cafe-noir); }
@@ -32,8 +32,8 @@
 .dia { display: grid; grid-template-rows: 20px var(--alto-vista); }
 .nombre-dia { font-size: 11px; font-weight: 600; text-align: center; color: var(--texto-suave); }
 .columna { position: relative; border-radius: 8px; background: repeating-linear-gradient(to bottom, var(--crema) 0 29px, var(--borde) 29px 30px); }
-.bloque { position: absolute; left: 2px; right: 2px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 6px; background: var(--fig-leaf); color: #fff; font-size: 10px; font-weight: 600; }
-.bloque.choca { background: #b4412f; outline: 2px solid #fff; }
+.bloque { position: absolute; left: 2px; right: 2px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 6px; background: var(--fig-leaf); color: var(--texto-claro); font-size: 10px; font-weight: 600; }
+.bloque.choca { background: var(--terracota); outline: 2px solid var(--crema-claro); }
 
 .revisando, .sin-choques { display: flex; align-items: center; gap: 6px; margin: 12px 0 0; font-size: 13px; }
 .sin-choques { color: var(--fig-leaf); }

@@ -15,11 +15,12 @@
 .area {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 28px;
   min-width: 0;
-  padding: 24px 28px 32px;
+  padding: 28px 32px 36px;
+  border: 1px solid var(--borde);
   border-radius: var(--radio-lg);
-  background: var(--crema);
+  background: var(--lienzo);
 }
 
 .contenido {
@@ -46,7 +47,7 @@
     position: fixed;
     inset: 0;
     z-index: 700;
-    background: rgba(35, 54, 26, 0.4);
+    background: rgba(36, 48, 40, 0.4);
   }
 
   .area {

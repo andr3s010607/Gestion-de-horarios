@@ -80,7 +80,7 @@
   right: 0;
   display: grid;
   place-items: center;
-  background: repeating-linear-gradient(135deg, rgba(207, 187, 153, 0.28) 0 6px, rgba(207, 187, 153, 0.12) 6px 12px);
+  background: repeating-linear-gradient(135deg, rgba(220, 213, 199, 0.28) 0 6px, rgba(220, 213, 199, 0.12) 6px 12px);
   pointer-events: none;
 }
 
@@ -102,7 +102,7 @@
 }
 
 .ranura.visible {
-  outline: 1px dashed rgba(85, 111, 48, 0.25);
+  outline: 1px dashed rgba(139, 163, 136, 0.25);
   outline-offset: -2px;
 }
 
@@ -112,7 +112,7 @@
   align-items: flex-start;
   justify-content: center;
   padding-top: 4px;
-  background: rgba(162, 180, 71, 0.3);
+  background: rgba(163, 184, 153, 0.35);
   outline: 2px solid var(--azeitona);
 }
 
@@ -152,7 +152,7 @@
 .sesion:hover,
 .sesion:focus-visible {
   z-index: 5;
-  box-shadow: 0 6px 18px rgba(35, 54, 26, 0.22);
+  box-shadow: 0 6px 18px rgba(36, 48, 40, 0.22);
 }
 
 .sesion.atravesable {
@@ -178,13 +178,13 @@
   max-width: 100%;
 }
 
-.tono-verde { --fondo-tono: #E3EBCF; --borde-tono: var(--fig-leaf); --texto-tono: #2F3F18; }
-.tono-petroleo { --fondo-tono: #DCE6EA; --borde-tono: var(--petroleo); --texto-tono: #23363D; }
-.tono-cafe { --fondo-tono: #EADFC9; --borde-tono: var(--cafe-noir); --texto-tono: var(--cafe-noir); }
-.tono-kombu { --fondo-tono: #DDE2D2; --borde-tono: var(--kombu); --texto-tono: var(--kombu); }
-.tono-moss { --fondo-tono: #E7E8D9; --borde-tono: var(--moss); --texto-tono: #4A4F30; }
-.tono-azeitona { --fondo-tono: var(--fresh-crown); --borde-tono: var(--azeitona); --texto-tono: #4A5718; }
-.tono-tan { --fondo-tono: #F1E7D6; --borde-tono: var(--tan); --texto-tono: #5C4A27; }
+.tono-verde { --fondo-tono: #E3EBDD; --borde-tono: var(--fig-leaf); --texto-tono: #2F4536; }
+.tono-petroleo { --fondo-tono: #E1EAE8; --borde-tono: var(--petroleo); --texto-tono: #3F5856; }
+.tono-cafe { --fondo-tono: #EFE6DB; --borde-tono: var(--cafe-noir); --texto-tono: #5E4F40; }
+.tono-kombu { --fondo-tono: #F7E4DF; --borde-tono: var(--terracota); --texto-tono: #8E4B41; }
+.tono-moss { --fondo-tono: #E9EDE4; --borde-tono: var(--moss); --texto-tono: #4C5E4A; }
+.tono-azeitona { --fondo-tono: #EEF2E6; --borde-tono: var(--azeitona); --texto-tono: #52654D; }
+.tono-tan { --fondo-tono: #F3ECE1; --borde-tono: #C9B9A3; --texto-tono: #6B5A48; }
 
 .bandeja {
   display: flex;

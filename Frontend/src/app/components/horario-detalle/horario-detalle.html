@@ -29,7 +29,7 @@
       </div>
       <div class="acciones-portada">
         <button type="button" class="btn btn-claro" (click)="exportar()" [disabled]="exportando()">
-          @if (exportando()) { <app-spinner class="en-linea" /> } @else { <app-icono nombre="descargar" [tamano]="16" /> } Exportar CSV
+          @if (exportando()) { <app-spinner class="en-linea" /> } @else { <app-icono nombre="descargar" [tamano]="16" /> } Exportar PDF
         </button>
         <button type="button" class="btn btn-claro" (click)="validar()" [disabled]="validando()">
           <app-icono nombre="check" [tamano]="16" /> Validar

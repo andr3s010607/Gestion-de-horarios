@@ -13,7 +13,7 @@ import { AuthService } from '../../services/auth.service';
 import { DocenteService } from '../../services/docente.service';
 import { CriterioConsulta, HorarioService } from '../../services/horario.service';
 import { ParametroService } from '../../services/parametro.service';
-import { descargarArchivo } from '../../utils/descarga';
+import { descargarHorarioPdf } from '../../utils/pdf-horario';
 import { aMinutos, horaCorta } from '../../utils/texto';
 import { CuadriculaHorarioComponent } from '../cuadricula-horario/cuadricula-horario';
 import { EstadoVacio } from '../estado-vacio/estado-vacio';
@@ -30,7 +30,7 @@ type Vista = 'cuadricula' | 'lista';
     .filtros { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) auto; gap: 14px; align-items: end; padding: 18px 20px; }
     .criterios { display: inline-flex; padding: 4px; border-radius: 999px; background: var(--crema); }
     .criterios button { height: 34px; padding: 0 14px; border: none; border-radius: 999px; background: transparent; color: var(--texto-suave); font-weight: 500; cursor: pointer; }
-    .criterios button.activo { background: var(--fig-leaf); color: #fff; }
+    .criterios button.activo { background: var(--moss-oscuro); color: var(--texto-claro); }
     .barra-resultados { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 14px 20px; border-top: 1px solid var(--borde); border-bottom: 1px solid var(--borde); }
     .barra-resultados h3 { font-size: 16px; }
     .barra-resultados p { margin: 2px 0 0; font-size: 13px; color: var(--texto-suave); }
@@ -97,7 +97,7 @@ type Vista = 'cuadricula' | 'lista';
                   <button type="button" [class.activo]="vista() === 'lista'" (click)="vista.set('lista')">Lista</button>
                 </div>
                 <button type="button" class="btn btn-secundario" (click)="exportar()" [disabled]="exportando()">
-                  @if (exportando()) { <app-spinner class="en-linea" style="filter: invert(0.6)" /> } @else { <app-icono nombre="descargar" [tamano]="16" /> } Exportar CSV
+                  @if (exportando()) { <app-spinner class="en-linea" style="filter: invert(0.6)" /> } @else { <app-icono nombre="descargar" [tamano]="16" /> } Exportar PDF
                 </button>
               </div>
             </div>
@@ -282,12 +282,15 @@ export class Consultas implements OnInit {
       return;
     }
     this.exportando.set(true);
-    this.horarioService.exportar(horario.id, consulta.criterio, consulta.valorId).subscribe({
-      next: respuesta => {
-        this.exportando.set(false);
-        descargarArchivo(respuesta, `horario-${horario.semestre}-${consulta.criterio}-${consulta.valorId}.csv`);
-      },
-      error: () => this.exportando.set(false)
-    });
+    try {
+      descargarHorarioPdf({
+        titulo: this.tituloResultado(),
+        subtitulo: `Horario del semestre ${horario.semestre}`,
+        sesiones: this.resultado() ?? [],
+        nombreArchivo: `horario-${horario.semestre}-${consulta.criterio}-${consulta.valorId}.pdf`
+      });
+    } finally {
+      this.exportando.set(false);
+    }
   }
 }

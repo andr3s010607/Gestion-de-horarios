@@ -9,7 +9,7 @@ import { SesionClase } from '../../models/sesion';
 import { leerCuerpo, mensajeDeError, tituloDeError } from '../../services/interceptor.service';
 import { PreseleccionService } from '../../services/preseleccion.service';
 import { ToastService } from '../../services/toast.service';
-import { descargarArchivo } from '../../utils/descarga';
+import { descargarHorarioPdf } from '../../utils/pdf-horario';
 import { aMinutos, horaCorta } from '../../utils/texto';
 import { EstadoVacio } from '../estado-vacio/estado-vacio';
 import { Icono } from '../icono/icono';
@@ -200,14 +200,22 @@ export class Preseleccion implements OnInit {
     if (id === null || this.confirmados().length === 0) {
       return;
     }
+    const confirmados = new Set(this.confirmados());
+    const sesiones = this.asignaturas().flatMap(asignatura => asignatura.grupos
+      .filter(grupo => confirmados.has(grupo.grupoId))
+      .flatMap(grupo => grupo.sesiones.map(sesion => ({ ...sesion, nombreDocente: sesion.nombreDocente ?? grupo.nombreDocente }))));
+    const semestre = this.horario()?.semestre ?? String(id);
     this.exportando.set(true);
-    this.servicio.exportar(id).subscribe({
-      next: respuesta => {
-        this.exportando.set(false);
-        descargarArchivo(respuesta, `mi-preseleccion-${this.horario()?.semestre ?? id}.csv`);
-      },
-      error: () => this.exportando.set(false)
-    });
+    try {
+      descargarHorarioPdf({
+        titulo: 'Mi preselección',
+        subtitulo: `Horario del semestre ${semestre}`,
+        sesiones,
+        nombreArchivo: `mi-preseleccion-${semestre}.pdf`
+      });
+    } finally {
+      this.exportando.set(false);
+    }
   }
 
   protected bloques(dia: DiaSemana): BloqueBorrador[] {

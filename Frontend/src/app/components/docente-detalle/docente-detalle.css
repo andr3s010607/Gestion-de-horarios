@@ -48,7 +48,7 @@
 }
 
 .perfil .texto-suave {
-  color: rgba(243, 238, 226, 0.7);
+  color: rgba(245, 242, 235, 0.7);
   font-size: 14px;
 }
 
@@ -115,7 +115,7 @@
   top: 0;
   bottom: 0;
   border-radius: 999px;
-  background: repeating-linear-gradient(135deg, var(--cafe-noir) 0 4px, #6b5a32 4px 8px);
+  background: repeating-linear-gradient(135deg, var(--cafe-noir) 0 4px, #8C7A67 4px 8px);
 }
 
 .escala {

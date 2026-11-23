@@ -7,8 +7,8 @@ import { Icono } from '../icono/icono';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { '(document:keydown.escape)': 'cerrar.emit()' },
   styles: `
-    .fondo { position: fixed; inset: 0; z-index: 800; display: grid; place-items: center; padding: 16px; background: rgba(35, 54, 26, 0.45); overflow-y: auto; }
-    .ventana { width: min(var(--ancho), 100%); max-height: calc(100vh - 32px); display: flex; flex-direction: column; border-radius: var(--radio-lg); background: var(--crema-claro); box-shadow: 0 24px 60px rgba(35, 54, 26, 0.3); }
+    .fondo { position: fixed; inset: 0; z-index: 800; display: grid; place-items: center; padding: 16px; background: rgba(36, 48, 40, 0.45); overflow-y: auto; }
+    .ventana { width: min(var(--ancho), 100%); max-height: calc(100vh - 32px); display: flex; flex-direction: column; border-radius: var(--radio-lg); background: var(--crema-claro); box-shadow: 0 24px 60px rgba(36, 48, 40, 0.3); }
     header { display: flex; align-items: flex-start; gap: 12px; padding: 24px 24px 0; }
     .titulos { flex: 1; min-width: 0; }
     h2 { font-size: 20px; }

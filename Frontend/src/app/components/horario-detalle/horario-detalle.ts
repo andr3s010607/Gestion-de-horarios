@@ -21,7 +21,7 @@ import { HorarioService } from '../../services/horario.service';
 import { leerCuerpo, mensajeDeError, tituloDeError } from '../../services/interceptor.service';
 import { ParametroService } from '../../services/parametro.service';
 import { ToastService } from '../../services/toast.service';
-import { descargarArchivo } from '../../utils/descarga';
+import { descargarHorarioPdf } from '../../utils/pdf-horario';
 import { CuadriculaHorarioComponent } from '../cuadricula-horario/cuadricula-horario';
 import { EstadoVacio } from '../estado-vacio/estado-vacio';
 import { GruposHorario } from '../grupos-horario/grupos-horario';
@@ -246,14 +246,18 @@ export class HorarioDetalle {
   }
 
   protected exportar(): void {
+    const semestre = this.horario()?.semestre ?? String(this.horarioId());
     this.exportando.set(true);
-    this.horarioService.exportar(this.horarioId()).subscribe({
-      next: respuesta => {
-        this.exportando.set(false);
-        descargarArchivo(respuesta, `horario-${this.horario()?.semestre ?? this.horarioId()}.csv`);
-      },
-      error: () => this.exportando.set(false)
-    });
+    try {
+      descargarHorarioPdf({
+        titulo: `Horario del semestre ${semestre}`,
+        subtitulo: this.aprobado() ? 'Horario aprobado' : 'Horario en borrador',
+        sesiones: this.cuadricula()?.sesionesUbicadas ?? [],
+        nombreArchivo: `horario-${semestre}.pdf`
+      });
+    } finally {
+      this.exportando.set(false);
+    }
   }
 
   protected irAValidacionDesdeRechazo(): void {

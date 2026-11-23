@@ -8,8 +8,8 @@ import { Icono } from '../icono/icono';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { '(document:keydown.escape)': 'cancelar()' },
   styles: `
-    .fondo { position: fixed; inset: 0; z-index: 900; display: grid; place-items: center; padding: 16px; background: rgba(35, 54, 26, 0.45); }
-    .dialogo { width: min(420px, 100%); padding: 28px; border-radius: var(--radio-lg); background: var(--crema-claro); box-shadow: 0 24px 60px rgba(35, 54, 26, 0.3); }
+    .fondo { position: fixed; inset: 0; z-index: 900; display: grid; place-items: center; padding: 16px; background: rgba(36, 48, 40, 0.45); }
+    .dialogo { width: min(420px, 100%); padding: 28px; border-radius: var(--radio-lg); background: var(--crema-claro); box-shadow: 0 24px 60px rgba(36, 48, 40, 0.3); }
     .marca { display: grid; place-items: center; width: 48px; height: 48px; margin-bottom: 16px; border-radius: 50%; background: var(--fresh-crown); color: var(--fig-leaf); }
     .marca.peligro { background: var(--error-fondo); color: var(--error); }
     h2 { font-size: 19px; margin-bottom: 8px; }
